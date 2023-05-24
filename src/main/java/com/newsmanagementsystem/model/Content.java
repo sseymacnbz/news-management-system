@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +16,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "content")
-public class Content {
+public class Content extends BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +41,9 @@ public class Content {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "publisher_editor_id")
-    private PublisherEditor publisherEditor;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "content")
+    private List<News> news;
 }

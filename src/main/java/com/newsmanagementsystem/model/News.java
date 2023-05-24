@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,12 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "news")
-public class News {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+public class News extends BaseModel{
 
     @Column(name = "date")
     private Date date;
@@ -49,10 +43,11 @@ public class News {
     private NewsType newsType;
 
     @ManyToOne
-    @JoinColumn(name = "main_editor_id")
-    private MainEditor mainEditor;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @OneToMany(mappedBy = "news")
-    private List<Viewer> viewers;
+    @ManyToOne
+    @JoinColumn(name = "content_id")
+    private Content content;
 
 }

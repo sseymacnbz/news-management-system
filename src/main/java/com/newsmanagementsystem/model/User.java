@@ -6,18 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
-@Table(name = "user")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+@Table(name = "user_")
+public class User extends BaseModel{
 
     @Column(name = "name")
     private String name;
@@ -31,12 +28,19 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "is_Subscribe")
+    private Boolean isSubscribe;
+
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private UserType type;
 
-    @ManyToOne
-    @JoinColumn(name = "viewer_id")
-    private Viewer viewer;
+    @OneToMany(mappedBy = "user")
+    private List<News> news;
+
+    @OneToMany(mappedBy = "user")
+    private List<Content> contents;
+
+
 
 }

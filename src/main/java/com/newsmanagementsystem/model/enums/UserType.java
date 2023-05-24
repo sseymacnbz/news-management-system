@@ -1,5 +1,5 @@
 package com.newsmanagementsystem.model.enums;
 
 public enum UserType {
-    SUBSCRIBER, NON_SUBSCRIBER
+    MAIN_EDITOR ,PUBLISHER_EDITOR, NON_EDITOR
 }
