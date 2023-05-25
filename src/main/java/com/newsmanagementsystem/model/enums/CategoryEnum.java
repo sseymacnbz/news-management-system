@@ -1,5 +1,5 @@
 package com.newsmanagementsystem.model.enums;
 
-public enum Category {
+public enum CategoryEnum {
     ECONOMY, SPORT, POLITICS, TECHNOLOGY
 }
