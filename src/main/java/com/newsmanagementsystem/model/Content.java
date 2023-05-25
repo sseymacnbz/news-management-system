@@ -1,7 +1,7 @@
 package com.newsmanagementsystem.model;
 
-import com.newsmanagementsystem.model.enums.Category;
-import com.newsmanagementsystem.model.enums.Scope;
+import com.newsmanagementsystem.model.enums.CategoryEnum;
+import com.newsmanagementsystem.model.enums.ScopeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,23 +16,23 @@ import java.util.List;
 
 @Entity
 @Table(name = "content")
-public class Content extends BaseModel {
+public class Content{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "date")
     private Date date;
 
     @Column(name = "scope")
     @Enumerated(EnumType.STRING)
-    private Scope scope;
+    private ScopeEnum scopeEnum;
 
     @Column(name = "category")
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private CategoryEnum categoryEnum;
 
     @Column(name = "title")
     private String title;
@@ -41,8 +41,8 @@ public class Content extends BaseModel {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "publisher_editor_id")
+    private PublisherEditor publisherEditor;
 
     @OneToMany(mappedBy = "content")
     private List<News> news;

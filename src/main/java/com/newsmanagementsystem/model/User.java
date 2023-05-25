@@ -1,20 +1,26 @@
 package com.newsmanagementsystem.model;
 
-import com.newsmanagementsystem.model.enums.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type")
+@DiscriminatorValue("user")
 @Table(name = "user_")
-public class User extends BaseModel{
+public class User{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -30,17 +36,5 @@ public class User extends BaseModel{
 
     @Column(name = "is_Subscribe")
     private Boolean isSubscribe;
-
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private UserType type;
-
-    @OneToMany(mappedBy = "user")
-    private List<News> news;
-
-    @OneToMany(mappedBy = "user")
-    private List<Content> contents;
-
-
 
 }

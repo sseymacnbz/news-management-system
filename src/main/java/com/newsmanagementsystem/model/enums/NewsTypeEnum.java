@@ -1,5 +1,5 @@
 package com.newsmanagementsystem.model.enums;
 
-public enum NewsType {
+public enum NewsTypeEnum {
     PAID_NEWS, FREE_NEWS
 }
