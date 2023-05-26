@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -24,7 +25,7 @@ public class News{
     private Long id;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
 
     @Column(name = "scope")
     @Enumerated(EnumType.STRING)
@@ -47,11 +48,11 @@ public class News{
     @Enumerated(EnumType.STRING)
     private NewsTypeEnum newsTypeEnum;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "main_editor_id")
     private MainEditor mainEditor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "content_id")
     private Content content;
 

@@ -1,8 +1,9 @@
 package com.newsmanagementsystem.service;
 
-import com.newsmanagementsystem.model.User;
+import com.newsmanagementsystem.model.MainEditor;
 
 public interface UserService{
 
-    public void create(User user);
+     void create(MainEditor MainEditor);
+
 }

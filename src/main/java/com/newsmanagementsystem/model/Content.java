@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Content{
     private Long id;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
 
     @Column(name = "scope")
     @Enumerated(EnumType.STRING)
@@ -44,6 +45,5 @@ public class Content{
     @JoinColumn(name = "publisher_editor_id")
     private PublisherEditor publisherEditor;
 
-    @OneToMany(mappedBy = "content")
-    private List<News> news;
+
 }

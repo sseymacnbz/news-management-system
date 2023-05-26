@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type")
-@DiscriminatorValue("user")
+@DiscriminatorValue("public_user")
 @Table(name = "user_")
 public class User{
 
