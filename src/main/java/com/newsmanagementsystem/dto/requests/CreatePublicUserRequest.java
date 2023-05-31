@@ -1,9 +1,7 @@
 package com.newsmanagementsystem.dto.requests;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 
 @Data
 public class CreatePublicUserRequest {
@@ -11,8 +9,5 @@ public class CreatePublicUserRequest {
     private String surname;
     private String email;
     private String password;
-
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private Boolean isSubscribe = false;
+    private Boolean isSubscribe = false; // Buna bi bak
 }

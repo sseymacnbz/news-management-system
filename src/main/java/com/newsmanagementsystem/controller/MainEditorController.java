@@ -6,6 +6,8 @@ import com.newsmanagementsystem.model.News;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +28,13 @@ public class MainEditorController{
     }
 
     @PostMapping("/createNews")
-    public void createNews(@RequestBody CreateNewsRequest createNewsRequest){
-        mainEditorService.createNews(createNewsRequest);
+    public ResponseEntity<HttpStatus> createNews(@RequestBody CreateNewsRequest createNewsRequest){
+        return mainEditorService.createNews(createNewsRequest);
+    }
+
+    @PostMapping("/assignPublisherEditor")
+    public ResponseEntity<HttpStatus> assignPublisherEditor(@RequestBody Long userId){
+        return mainEditorService.assignPublisherEditor(userId);
     }
 
 }

@@ -3,6 +3,7 @@ package com.newsmanagementsystem.service.impl;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.mapper.NewsMapper;
 import com.newsmanagementsystem.model.News;
+import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.repository.NewsRepository;
 import com.newsmanagementsystem.repository.UserRepository;
 import com.newsmanagementsystem.service.MainEditorService;
@@ -22,17 +23,29 @@ public class MainEditorServiceImpl implements MainEditorService {
     private UserRepository userRepository;
 
     @Override
-    public ResponseEntity createNews(CreateNewsRequest createNewsRequest) {
-        AtomicBoolean control = new AtomicBoolean(false);
-        userRepository.findMainEditors().stream().forEach(editor->{
-            if(editor.getId() == createNewsRequest.getMainEditor().getId()){control.set(true);}
-        });
+    public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest) {
 
-        if(control.get()){
+        boolean result = userRepository.findMainEditors().stream().anyMatch(editor-> editor.getId().equals(createNewsRequest.getMainEditor().getId()));
+
+        if(result){
             News news = NewsMapper.INSTANCE.createNewsRequestToContent(createNewsRequest);
             newsRepository.save(news);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> assignPublisherEditor(Long userId){
+
+        boolean result = userRepository.findUsers().stream().anyMatch(user -> user.getId()==userId);
+
+        if(result){
+            userRepository.assignToPublisherEditor(userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

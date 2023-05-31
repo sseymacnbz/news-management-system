@@ -26,13 +26,11 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
 
 
     @Override
-    public ResponseEntity createContent(CreateContentRequest createContentRequest) {
-        AtomicBoolean control = new AtomicBoolean(false);
-        userRepository.findPublisherEditors().stream().forEach(editor -> {
-            if (editor.getId() == createContentRequest.getPublisherEditor().getId()){control.set(true);}
-        });
+    public ResponseEntity<HttpStatus> createContent(CreateContentRequest createContentRequest) {
 
-        if(control.get()){
+        boolean result = userRepository.findPublisherEditors().stream().anyMatch(editor-> editor.getId().equals(createContentRequest.getPublisherEditor().getId()));
+
+        if(result){
             Content content = ContentMapper.INSTANCE.createContentRequestToContent(createContentRequest);
             contentRepository.save(content);
             return new ResponseEntity<>(HttpStatus.OK);
