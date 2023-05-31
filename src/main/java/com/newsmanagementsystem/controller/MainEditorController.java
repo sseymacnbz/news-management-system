@@ -1,9 +1,9 @@
 package com.newsmanagementsystem.controller;
 
+import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.News;
-import com.newsmanagementsystem.model.PublisherEditor;
-import com.newsmanagementsystem.model.User;
+import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +17,8 @@ public class MainEditorController{
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MainEditorService mainEditorService;
 
     @PostMapping
     public void create(@RequestBody MainEditor mainEditor){
@@ -24,8 +26,8 @@ public class MainEditorController{
     }
 
     @PostMapping("/createNews")
-    public void createNews(@RequestBody News news){
-
+    public void createNews(@RequestBody CreateNewsRequest createNewsRequest){
+        mainEditorService.createNews(createNewsRequest);
     }
 
 }
