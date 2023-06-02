@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,7 +29,7 @@ public class News{
 
     @Column(name = "scope")
     @Enumerated(EnumType.STRING)
-    private ScopeEnum scopeEnum;
+    private List<ScopeEnum> scopeEnum;
 
     @Column(name = "category")
     @Enumerated(EnumType.STRING)

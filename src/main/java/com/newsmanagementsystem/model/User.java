@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type")
-@DiscriminatorValue("public_user")
+@DiscriminatorValue("non-subscriber")
 @Table(name = "user_")
 public class User{
 
@@ -33,8 +33,5 @@ public class User{
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "is_Subscribe")
-    private Boolean isSubscribe;
 
 }

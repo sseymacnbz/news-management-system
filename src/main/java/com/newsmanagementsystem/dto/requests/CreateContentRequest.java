@@ -1,6 +1,5 @@
 package com.newsmanagementsystem.dto.requests;
 
-import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.enums.CategoryEnum;
 import com.newsmanagementsystem.model.enums.ScopeEnum;
 import lombok.Data;
@@ -14,5 +13,5 @@ public class CreateContentRequest {
     private CategoryEnum categoryEnum;
     private String title;
     private String text;
-    private PublisherEditor publisherEditor;
+    private Long publisherEditorId;
 }

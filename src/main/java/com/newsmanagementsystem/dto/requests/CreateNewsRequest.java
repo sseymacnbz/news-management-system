@@ -1,7 +1,5 @@
 package com.newsmanagementsystem.dto.requests;
 
-import com.newsmanagementsystem.model.Content;
-import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.enums.CategoryEnum;
 import com.newsmanagementsystem.model.enums.NewsTypeEnum;
 import com.newsmanagementsystem.model.enums.ScopeEnum;
@@ -10,18 +8,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateNewsRequest {
     private LocalDate date;
-    private ScopeEnum scopeEnum;
+    private List<ScopeEnum> scopeEnum;
     private CategoryEnum categoryEnum;
     private Boolean isHeadline;
     private String title;
     private String text;
     private NewsTypeEnum newsTypeEnum;
-    private MainEditor mainEditor;
-    private Content content;
+    private Long mainEditorId;
+    private Long contentId;
 }

@@ -1,13 +1,11 @@
 package com.newsmanagementsystem.dto.requests;
 
-import lombok.*;
-
+import lombok.Data;
 
 @Data
-public class CreatePublicUserRequest {
+public class CreateUserRequest {
     private String name;
     private String surname;
     private String email;
     private String password;
-    private Boolean isSubscribe = false; // Buna bi bak
 }

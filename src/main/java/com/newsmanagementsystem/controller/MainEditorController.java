@@ -2,7 +2,6 @@ package com.newsmanagementsystem.controller;
 
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.model.MainEditor;
-import com.newsmanagementsystem.model.News;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

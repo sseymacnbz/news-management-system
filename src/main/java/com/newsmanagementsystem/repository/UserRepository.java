@@ -19,11 +19,21 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Query(value = "SELECT * from user_ WHERE user_type='publisher_editor'", nativeQuery = true)
     public List<User> findPublisherEditors();
 
-    @Query(value = "SELECT * from user_ WHERE user_type='public_user'", nativeQuery = true)
-    public List<User> findUsers();
+    @Query(value = "SELECT * from user_ WHERE user_type = 'subscriber'", nativeQuery = true)
+    public List<User> findSubscriberUsers();
+
+    @Query(value = "SELECT * from user_ WHERE user_type = 'non-subscriber'", nativeQuery = true)
+    public List<User> findNonSubscriberUsers();
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE user_ SET user_type = 'publisher_user' WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE user_ SET user_type = 'publisher_editor' WHERE id = :id", nativeQuery = true)
     public void assignToPublisherEditor(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE user_ SET user_type = 'subscriber' WHERE id = :id", nativeQuery = true)
+    public void assignToSubscriber(@Param("id") Long id);
+
+
 }

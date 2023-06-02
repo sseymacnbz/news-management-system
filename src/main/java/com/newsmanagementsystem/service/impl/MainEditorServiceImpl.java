@@ -3,49 +3,46 @@ package com.newsmanagementsystem.service.impl;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.mapper.NewsMapper;
 import com.newsmanagementsystem.model.News;
-import com.newsmanagementsystem.model.User;
-import com.newsmanagementsystem.repository.NewsRepository;
-import com.newsmanagementsystem.repository.UserRepository;
 import com.newsmanagementsystem.service.MainEditorService;
+import com.newsmanagementsystem.service.NewsService;
+import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 @Service
 public class MainEditorServiceImpl implements MainEditorService {
 
     @Autowired
-    private NewsRepository newsRepository;
+    private NewsService newsService;
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest) {
 
-        boolean result = userRepository.findMainEditors().stream().anyMatch(editor-> editor.getId().equals(createNewsRequest.getMainEditor().getId()));
+        boolean result = userService.findMainEditors().stream().anyMatch(editor-> editor.getId().equals(createNewsRequest.getMainEditorId()));
 
         if(result){
             News news = NewsMapper.INSTANCE.createNewsRequestToContent(createNewsRequest);
-            newsRepository.save(news);
-            return new ResponseEntity<>(HttpStatus.OK);
+            newsService.save(news);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<HttpStatus> assignPublisherEditor(Long userId){
 
-        boolean result = userRepository.findUsers().stream().anyMatch(user -> user.getId()==userId);
+        boolean result = userService.findSubscriberUsers().stream().anyMatch(user -> user.getId().equals(userId));
 
         if(result){
-            userRepository.assignToPublisherEditor(userId);
+            userService.assignToPublisherEditor(userId);
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 }
