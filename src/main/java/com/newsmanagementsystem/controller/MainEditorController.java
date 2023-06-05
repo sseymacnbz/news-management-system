@@ -1,6 +1,8 @@
 package com.newsmanagementsystem.controller;
 
+import com.newsmanagementsystem.dto.requests.AssignRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
+import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
@@ -29,8 +31,18 @@ public class MainEditorController{
     }
 
     @PutMapping("/assignPublisherEditor")
-    public ResponseEntity<HttpStatus> assignPublisherEditor(@RequestBody Long userId){
-        return mainEditorService.assignPublisherEditor(userId);
+    public ResponseEntity<HttpStatus> assignPublisherEditor(@RequestBody AssignRequest assignRequest){
+        return mainEditorService.assignPublisherEditor(assignRequest);
+    }
+
+    @PutMapping("/assignSubscriber")
+    public ResponseEntity<HttpStatus> assignSubscriber(@RequestBody AssignRequest assignRequest){
+        return mainEditorService.assignSubscriber(assignRequest);
+    }
+
+    @PutMapping("/updateNews") // BURASI SORULACAK
+    public ResponseEntity<HttpStatus> updateNews(@RequestBody UpdateNewsRequest updateNewsRequest){
+        return mainEditorService.updateNews(updateNewsRequest);
     }
 
 }

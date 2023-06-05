@@ -1,5 +1,6 @@
 package com.newsmanagementsystem.service.impl;
 
+import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.model.News;
@@ -80,5 +81,11 @@ public class NewsServiceImpl implements NewsService {
         }
 
     }
+
+    @Override
+    public News findById(Long newsId) {
+        return newsRepository.getReferenceById(newsId);
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.newsmanagementsystem.mapper;
 
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
+import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.model.News;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,5 +16,12 @@ public interface NewsMapper {
             @Mapping(target = "mainEditor.id", source = "mainEditorId"),
             @Mapping(target = "content.id", source = "contentId")
     })
-    News createNewsRequestToContent(CreateNewsRequest createNewsRequest);
+    News createNewsRequestToNews(CreateNewsRequest createNewsRequest);
+
+
+    @Mappings({
+            @Mapping(target = "id", source = "newsId"),
+            @Mapping(target = "mainEditor.id", source = "mainEditorId")
+    })
+    News updateNewsRequestToNews(UpdateNewsRequest updateNewsRequest);
 }
