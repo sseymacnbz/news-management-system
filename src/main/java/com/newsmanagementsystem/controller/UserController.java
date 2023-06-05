@@ -2,7 +2,6 @@ package com.newsmanagementsystem.controller;
 
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
-import com.newsmanagementsystem.service.NewsService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class UserController {
         return userService.createPublicUser(createUserRequest);
     }
 
-    @GetMapping(value = "/{userId}")
+    @GetMapping(value = "/news/{userId}")
     public ResponseEntity<List<DisplayNewsResponse>> displayNews(@PathVariable Long userId){
         return userService.displayNews(userId);
     }

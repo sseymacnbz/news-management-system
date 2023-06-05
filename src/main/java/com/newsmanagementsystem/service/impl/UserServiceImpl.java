@@ -41,11 +41,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<List<DisplayNewsResponse>> displayNews(Long userId) {
 
-        boolean result = userRepository.findSubscriberUsers().stream().anyMatch(user->user.getId().equals(userId));
+        boolean result = userRepository.findNonSubscriberUsers().stream().anyMatch(user->user.getId().equals(userId));
         if(result){
-            return newsService.displayNewsForSubscriber();
+            return newsService.displayNewsForNonSubscriber();
         }
-        return null;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

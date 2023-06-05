@@ -16,7 +16,7 @@ public class PublisherEditorController {
     @Autowired
     private PublisherEditorService publisherEditorService;
 
-    @PostMapping
+    @PostMapping("/createContent")
     public ResponseEntity<HttpStatus> createContent(@RequestBody CreateContentRequest createContentRequest){
         return publisherEditorService.createContent(createContentRequest);
     }

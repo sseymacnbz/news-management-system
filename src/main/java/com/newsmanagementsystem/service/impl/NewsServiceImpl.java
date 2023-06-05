@@ -50,7 +50,9 @@ public class NewsServiceImpl implements NewsService {
 
             List<DisplayNewsResponse> freeNewsList = displayNewsForNonSubscriber().getBody(); // ücretsiz haberler getiriliyor
 
-            displayNewsResponseList = Stream.concat(displayNewsResponseList.stream(), freeNewsList.stream()).parallel().toList(); // displayNewsResponseList'in ardina ücretsiz olanlar da ekleniyor
+            if(freeNewsList != null){ // ücretsiz haberler null dönmezse en sona ücretsizler de eklenecek.
+                displayNewsResponseList = Stream.concat(displayNewsResponseList.stream(), freeNewsList.stream()).parallel().toList(); // displayNewsResponseList'in ardina ücretsiz olanlar da ekleniyor
+            }
 
             return new ResponseEntity<>(displayNewsResponseList, HttpStatus.OK);
 
