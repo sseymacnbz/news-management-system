@@ -13,6 +13,8 @@ public interface NewsService {
     ResponseEntity<List<DisplayNewsResponse>> displayNewsForSubscriber();
     ResponseEntity<List<DisplayNewsResponse>> displayNewsForNonSubscriber();
     News findById (Long newsId);
+    ResponseEntity<HttpStatus> delete(Long newsId);
+
 
 
 }

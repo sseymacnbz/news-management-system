@@ -1,6 +1,7 @@
 package com.newsmanagementsystem.controller;
 
-import com.newsmanagementsystem.dto.requests.AssignRequest;
+import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
+import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.model.MainEditor;
@@ -22,7 +23,7 @@ public class MainEditorController{
 
     @PostMapping
     public void create(@RequestBody MainEditor mainEditor){
-        userService.create(mainEditor);
+        userService.createMainEditor(mainEditor);
     }
 
     @PostMapping("/createNews")
@@ -30,19 +31,41 @@ public class MainEditorController{
         return mainEditorService.createNews(createNewsRequest);
     }
 
+    @PostMapping("/createPublisherEditor")
+    public ResponseEntity<HttpStatus> createPublisherEditor(@RequestBody CreatePublisherEditorRequest createPublisherEditorRequest){
+        return mainEditorService.createPublisherEditor(createPublisherEditorRequest);
+    }
+
     @PutMapping("/assignPublisherEditor")
-    public ResponseEntity<HttpStatus> assignPublisherEditor(@RequestBody AssignRequest assignRequest){
-        return mainEditorService.assignPublisherEditor(assignRequest);
+    public ResponseEntity<HttpStatus> assignPublisherEditor(@RequestBody MainEditorRequest mainEditorRequest){
+        return mainEditorService.assignPublisherEditor(mainEditorRequest);
     }
 
     @PutMapping("/assignSubscriber")
-    public ResponseEntity<HttpStatus> assignSubscriber(@RequestBody AssignRequest assignRequest){
-        return mainEditorService.assignSubscriber(assignRequest);
+    public ResponseEntity<HttpStatus> assignSubscriber(@RequestBody MainEditorRequest mainEditorRequest){
+        return mainEditorService.assignSubscriber(mainEditorRequest);
     }
 
     @PutMapping("/updateNews") // BURASI SORULACAK
     public ResponseEntity<HttpStatus> updateNews(@RequestBody UpdateNewsRequest updateNewsRequest){
         return mainEditorService.updateNews(updateNewsRequest);
     }
+
+    @DeleteMapping("/deleteNews")
+    public ResponseEntity<HttpStatus> deleteNews(@RequestBody MainEditorRequest mainEditorRequest){
+        return mainEditorService.deleteNews(mainEditorRequest);
+    }
+
+    @DeleteMapping("/deleteSubscriber")
+    public ResponseEntity<HttpStatus> deleteSubscriber(@RequestBody MainEditorRequest mainEditorRequest){
+        return mainEditorService.deleteSubscriber(mainEditorRequest);
+    }
+
+    @DeleteMapping("/deletePublisherEditor")
+    public ResponseEntity<HttpStatus> deletePublisherEditor(@RequestBody MainEditorRequest mainEditorRequest){
+        return  mainEditorService.deletePublisherEditor(mainEditorRequest);
+    }
+
+
 
 }

@@ -5,6 +5,7 @@ import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.mapper.UserMapper;
 import com.newsmanagementsystem.model.MainEditor;
+import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.repository.UserRepository;
 import com.newsmanagementsystem.service.NewsService;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void create(MainEditor mainEditor) {
+    public void createMainEditor(MainEditor mainEditor) {
         userRepository.save(mainEditor);
     }
 
@@ -36,6 +37,17 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.INSTANCE.createPublicUserRequest(createUserRequest);
         userRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor) {
+        try{
+            userRepository.save(publisherEditor);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -88,5 +100,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findNonSubscriberUsers() {
         return userRepository.findNonSubscriberUsers();
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> delete(Long userId) {
+        try{
+            userRepository.deleteById(userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

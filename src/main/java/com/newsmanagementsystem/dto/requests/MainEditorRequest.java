@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignRequest {
+public class MainEditorRequest {
     Long mainEditorId;
-    Long userId;
+    Long id;
 }

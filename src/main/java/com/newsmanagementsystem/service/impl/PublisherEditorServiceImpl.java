@@ -2,8 +2,11 @@ package com.newsmanagementsystem.service.impl;
 
 
 import com.newsmanagementsystem.dto.requests.CreateContentRequest;
+import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.mapper.ContentMapper;
+import com.newsmanagementsystem.mapper.PublisherEditorMapper;
 import com.newsmanagementsystem.model.Content;
+import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.PublisherEditorService;
 import com.newsmanagementsystem.service.UserService;
@@ -33,5 +36,16 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> createPublisherEditor(CreatePublisherEditorRequest createPublisherEditorRequest) {
+
+        try{
+            PublisherEditor publisherEditor = PublisherEditorMapper.INSTANCE.createPublisherEditorRequestToPublisherEditor(createPublisherEditorRequest);
+            return userService.createPublisherEditor(publisherEditor);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

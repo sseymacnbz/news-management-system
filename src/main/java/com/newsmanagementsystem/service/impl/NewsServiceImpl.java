@@ -87,5 +87,14 @@ public class NewsServiceImpl implements NewsService {
         return newsRepository.getReferenceById(newsId);
     }
 
+    @Override
+    public ResponseEntity<HttpStatus> delete(Long newsId) {
+        try{
+            newsRepository.deleteById(newsId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

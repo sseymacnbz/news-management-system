@@ -1,12 +1,14 @@
 package com.newsmanagementsystem.service.impl;
 
-import com.newsmanagementsystem.dto.requests.AssignRequest;
+import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
+import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.mapper.NewsMapper;
 import com.newsmanagementsystem.model.News;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.NewsService;
+import com.newsmanagementsystem.service.PublisherEditorService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,35 +20,40 @@ public class MainEditorServiceImpl implements MainEditorService {
 
     @Autowired
     private NewsService newsService;
-
     @Autowired
     private UserService userService;
+    @Autowired
+    private PublisherEditorService publisherEditorService;
 
 
     @Override
     public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest) {
 
-        boolean result = userService.findMainEditors().stream().anyMatch(editor-> editor.getId().equals(createNewsRequest.getMainEditorId()));
-
-        if(result){
+        if(verifyMainEditor(createNewsRequest.getMainEditorId())){
             News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
-            newsService.save(news);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return newsService.save(news);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> assignPublisherEditor(AssignRequest assignRequest){
+    public ResponseEntity<HttpStatus> createPublisherEditor(CreatePublisherEditorRequest createPublisherEditorRequest) {
+        if(verifyMainEditor(createPublisherEditorRequest.getMainEditorId())){
+            return publisherEditorService.createPublisherEditor(createPublisherEditorRequest);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-        if(userService.findMainEditors().stream().anyMatch(mainEditor -> mainEditor.getId().equals(assignRequest.getMainEditorId()))){
+    @Override
+    public ResponseEntity<HttpStatus> assignPublisherEditor(MainEditorRequest mainEditorRequest){
 
-            boolean result = userService.findSubscriberUsers().stream().anyMatch(user -> user.getId().equals(assignRequest.getUserId())) ||
-                    userService.findNonSubscriberUsers().stream().anyMatch(user -> user.getId().equals(assignRequest.getUserId()));
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+
+            boolean result = userService.findSubscriberUsers().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId())) ||
+                    userService.findNonSubscriberUsers().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId()));
 
             if(result){
-                userService.assignToPublisherEditor(assignRequest.getUserId());
-                return new ResponseEntity<>(HttpStatus.OK);
+                return userService.assignToPublisherEditor(mainEditorRequest.getId());
             }
 
         }
@@ -55,15 +62,14 @@ public class MainEditorServiceImpl implements MainEditorService {
     }
 
     @Override
-    public ResponseEntity<HttpStatus> assignSubscriber(AssignRequest assignRequest) {
+    public ResponseEntity<HttpStatus> assignSubscriber(MainEditorRequest mainEditorRequest) {
 
-        if(userService.findMainEditors().stream().anyMatch(mainEditor -> mainEditor.getId().equals(assignRequest.getMainEditorId()))){
-            boolean result = userService.findPublisherEditors().stream().anyMatch(user -> user.getId().equals(assignRequest.getUserId())) ||
-                    userService.findNonSubscriberUsers().stream().anyMatch(user -> user.getId().equals(assignRequest.getUserId()));
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            boolean result = userService.findPublisherEditors().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId())) ||
+                    userService.findNonSubscriberUsers().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId()));
 
             if (result) {
-                userService.assignToSubscriber(assignRequest.getUserId());
-                return new ResponseEntity<>(HttpStatus.OK);
+                return userService.assignToSubscriber(mainEditorRequest.getId());
             }
         }
 
@@ -74,12 +80,47 @@ public class MainEditorServiceImpl implements MainEditorService {
     public ResponseEntity<HttpStatus> updateNews(UpdateNewsRequest updateNewsRequest) {
 
         if((newsService.findById(updateNewsRequest.getNewsId()) != null) &&
-                userService.findMainEditors().stream().anyMatch(mainEditor->mainEditor.getId().equals(updateNewsRequest.getMainEditorId()))){
+                verifyMainEditor(updateNewsRequest.getMainEditorId())){
            News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
             newsService.findById(updateNewsRequest.getNewsId()).getContent().getId();
-           newsService.save(news);
-           return new ResponseEntity<>(HttpStatus.OK);
+            return newsService.save(news);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> deleteNews(MainEditorRequest mainEditorRequest) {
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            return newsService.delete(mainEditorRequest.getId());
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> deleteSubscriber(MainEditorRequest mainEditorRequest) {
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if (userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
+                return userService.delete(mainEditorRequest.getId());
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> deletePublisherEditor(MainEditorRequest mainEditorRequest) {
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if (userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
+                return userService.delete(mainEditorRequest.getId());
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    private boolean verifyMainEditor(Long mainEditorId){
+        if(userService.findMainEditors().stream().anyMatch(mainEditor -> mainEditor.getId().equals(mainEditorId))){
+            return true;
+        }
+        return false;
     }
 }
