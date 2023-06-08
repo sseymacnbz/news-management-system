@@ -5,8 +5,10 @@ import com.newsmanagementsystem.model.News;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface DisplayNewsMapper {
     DisplayNewsMapper INSTANCE = Mappers.getMapper(DisplayNewsMapper.class);
-    DisplayNewsResponse newsToDisplayNewsResponse(News news);
+    List<DisplayNewsResponse> newsToDisplayNewsResponse(List<News> news);
 }

@@ -1,6 +1,5 @@
 package com.newsmanagementsystem.service.impl;
 
-import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.model.News;
@@ -8,11 +7,11 @@ import com.newsmanagementsystem.model.enums.NewsTypeEnum;
 import com.newsmanagementsystem.repository.NewsRepository;
 import com.newsmanagementsystem.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,6 +19,7 @@ import java.util.stream.Stream;
 public class NewsServiceImpl implements NewsService {
     @Autowired
     private NewsRepository newsRepository;
+
 
     @Override
     public ResponseEntity<HttpStatus> save(News news) {
@@ -33,53 +33,39 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public ResponseEntity<List<DisplayNewsResponse>> displayNewsForSubscriber() {
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable) {
 
-        try{
-            List<News> newsList = newsRepository.findAllByOrderByDateDesc(); // Tüm news'leri tarihi azalan şekilde getirir
+        try {
+            Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+            List<News> isHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(true);
+            List<News> isNotHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(false);
+            List<News> allNews = Stream.concat(isHeadlineAndPaid.stream(), isNotHeadlineAndPaid.stream()).toList();
 
-            List<News> paidNewsList = newsList.stream()
-                    .filter(news -> news.getNewsTypeEnum().equals(NewsTypeEnum.PAID_NEWS) && news.getIsHeadline()).toList(); // haberlerdeki ücretli ve manşet olanlari sırayla filtreleyip usersNewsList'e atar
+            int start = (int) pageableResponse.getOffset();
+            int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
+            List<News> pageContent = allNews.subList(start, end);
 
-            paidNewsList = Stream.concat(paidNewsList.stream(), newsList.stream()
-                                                                           .filter(news -> news.getNewsTypeEnum().equals(NewsTypeEnum.PAID_NEWS) && !news.getIsHeadline()))
-                                                                           .parallel().toList(); // usersNewsList ile ücretli ve manşet olmayan haberleri concat eder.
-
-            List<DisplayNewsResponse> displayNewsResponseList = new ArrayList<>(); // en son gösterilecek haberlerin listesi
-
-            paidNewsList.stream().map(DisplayNewsMapper.INSTANCE::newsToDisplayNewsResponse).forEach(displayNewsResponseList::add); // Mapper'dan geçen ücretli haberler displayNewsResponseList'e ekleniyor
-
-            List<DisplayNewsResponse> freeNewsList = displayNewsForNonSubscriber().getBody(); // ücretsiz haberler getiriliyor
-
-            if(freeNewsList != null){ // ücretsiz haberler null dönmezse en sona ücretsizler de eklenecek.
-                displayNewsResponseList = Stream.concat(displayNewsResponseList.stream(), freeNewsList.stream()).parallel().toList(); // displayNewsResponseList'in ardina ücretsiz olanlar da ekleniyor
-            }
-
-            return new ResponseEntity<>(displayNewsResponseList, HttpStatus.OK);
-
-        }catch(Exception e) {
+            return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, allNews.size()), HttpStatus.OK);
+        }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<List<DisplayNewsResponse>> displayNewsForNonSubscriber() {
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable) {
 
-        try{
-            List<News> newsList = newsRepository.findAllByOrderByDateDesc();
-            List<News> usersNewsList = newsList.stream()
-                    .filter(news -> news.getNewsTypeEnum().equals(NewsTypeEnum.FREE_NEWS) && news.getIsHeadline()).toList();
-            usersNewsList = Stream.concat(usersNewsList.stream(), newsList.stream().filter(news -> news.getNewsTypeEnum().equals(NewsTypeEnum.FREE_NEWS) && !news.getIsHeadline())).parallel().toList();
+        Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), pageable.getSort()); // Page Requesti oluşturulur
 
-            List<DisplayNewsResponse> displayNewsResponseList = new ArrayList<>();
+        List<News> isHeadlineAndFree= newsRepository.findAllByIsHeadlineAndNewsTypeEnumOrderByDateDesc(true, NewsTypeEnum.FREE_NEWS); // manşet ve ücretsiz olanlar
+        List<News> isNotHeadlineAndFree= newsRepository.findAllByIsHeadlineAndNewsTypeEnumOrderByDateDesc(false, NewsTypeEnum.FREE_NEWS); // manşet olmayan ve ücretsiz olanlar
+        List<News> newsList = Stream.concat(isHeadlineAndFree.stream(), isNotHeadlineAndFree.stream()).toList(); // Yukarıdaki iki liste birleştirilir
 
-            usersNewsList.stream().map(DisplayNewsMapper.INSTANCE::newsToDisplayNewsResponse).forEach(displayNewsResponseList::add);
+        // Listeyi, Paging listeye çevrilmek için gerekli işlemleri
+        int start = (int) pageableResponse.getOffset();
+        int end = Math.min((start + pageableResponse.getPageSize()), newsList.size());
+        List<News> pageContent = newsList.subList(start, end);
 
-            return new ResponseEntity<>(displayNewsResponseList, HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+        return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, newsList.size()), HttpStatus.OK);
     }
 
     @Override

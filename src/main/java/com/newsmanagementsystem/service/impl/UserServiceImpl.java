@@ -11,6 +11,8 @@ import com.newsmanagementsystem.repository.UserRepository;
 import com.newsmanagementsystem.service.NewsService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,11 +53,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<List<DisplayNewsResponse>> displayNews(Long userId) {
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNews(Long userId, Pageable pageable) {
 
         boolean result = userRepository.findNonSubscriberUsers().stream().anyMatch(user->user.getId().equals(userId));
         if(result){
-            return newsService.displayNewsForNonSubscriber();
+            return newsService.displayNewsForNonSubscriber(pageable);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

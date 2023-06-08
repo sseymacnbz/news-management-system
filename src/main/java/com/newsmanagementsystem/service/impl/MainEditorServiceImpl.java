@@ -98,29 +98,22 @@ public class MainEditorServiceImpl implements MainEditorService {
 
     @Override
     public ResponseEntity<HttpStatus> deleteSubscriber(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
-            if (userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
-                return userService.delete(mainEditorRequest.getId());
-            }
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) && userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
+            return userService.delete(mainEditorRequest.getId());
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<HttpStatus> deletePublisherEditor(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
-            if (userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
-                return userService.delete(mainEditorRequest.getId());
-            }
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) && userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
+            return userService.delete(mainEditorRequest.getId());
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
     private boolean verifyMainEditor(Long mainEditorId){
-        if(userService.findMainEditors().stream().anyMatch(mainEditor -> mainEditor.getId().equals(mainEditorId))){
-            return true;
-        }
-        return false;
+        return userService.findMainEditors().stream().anyMatch(mainEditor -> mainEditor.getId().equals(mainEditorId));
     }
 }

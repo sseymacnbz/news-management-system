@@ -5,6 +5,8 @@ import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -14,7 +16,7 @@ public interface UserService{
      void createMainEditor(MainEditor mainEditor); //??
      ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest);
      ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor);
-     ResponseEntity<List<DisplayNewsResponse>> displayNews(Long userId);
+     ResponseEntity<Page<DisplayNewsResponse>> displayNews(Long userId, Pageable pageable);
      ResponseEntity<HttpStatus> assignToPublisherEditor(Long userId);
      ResponseEntity<HttpStatus> assignToSubscriber(Long userId);
      List<User> findMainEditors();
