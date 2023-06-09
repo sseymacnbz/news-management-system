@@ -2,10 +2,14 @@ package com.newsmanagementsystem.service.impl;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
+import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
 import com.newsmanagementsystem.model.enums.NewsTypeEnum;
 import com.newsmanagementsystem.repository.NewsRepository;
 import com.newsmanagementsystem.service.NewsService;
+import com.newsmanagementsystem.utilities.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,10 @@ public class NewsServiceImpl implements NewsService {
     @Autowired
     private NewsRepository newsRepository;
 
+    @Autowired
+    private LogUtil logUtil;
+
+    private static final Logger log = LoggerFactory.getLogger(NewsServiceImpl.class);
 
     @Override
     public ResponseEntity<HttpStatus> save(News news) {
@@ -44,7 +52,7 @@ public class NewsServiceImpl implements NewsService {
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
             List<News> pageContent = allNews.subList(start, end);
-
+            pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
             return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, allNews.size()), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -65,6 +73,7 @@ public class NewsServiceImpl implements NewsService {
         int end = Math.min((start + pageableResponse.getPageSize()), newsList.size());
         List<News> pageContent = newsList.subList(start, end);
 
+        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
         return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, newsList.size()), HttpStatus.OK);
     }
 
@@ -77,6 +86,20 @@ public class NewsServiceImpl implements NewsService {
     public ResponseEntity<HttpStatus> delete(Long newsId) {
         try{
             newsRepository.deleteById(newsId);
+            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.deleted",newsId));
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> deleteNewsByContents(List<Content> contentList) {
+
+        try{
+            contentList.stream().forEach(content -> {
+                newsRepository.findByContentId(content.getId()).stream().forEach(news -> delete(news.getId()));
+            });
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

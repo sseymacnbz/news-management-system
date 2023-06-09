@@ -10,6 +10,9 @@ import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.PublisherEditorService;
 import com.newsmanagementsystem.service.UserService;
+import com.newsmanagementsystem.utilities.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,11 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private LogUtil logUtil;
+
+    private static final Logger log = LoggerFactory.getLogger(PublisherEditorServiceImpl.class);
 
     @Override
     public ResponseEntity<HttpStatus> createContent(CreateContentRequest createContentRequest) {
@@ -43,7 +51,8 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
 
         try{
             PublisherEditor publisherEditor = PublisherEditorMapper.INSTANCE.createPublisherEditorRequestToPublisherEditor(createPublisherEditorRequest);
-            return userService.createPublisherEditor(publisherEditor);
+            userService.createPublisherEditor(publisherEditor);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

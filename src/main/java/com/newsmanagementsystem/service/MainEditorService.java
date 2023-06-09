@@ -16,6 +16,7 @@ public interface MainEditorService {
     ResponseEntity<HttpStatus> deleteNews(MainEditorRequest mainEditorRequest);
     ResponseEntity<HttpStatus> deleteSubscriber(MainEditorRequest mainEditorRequest);
     ResponseEntity<HttpStatus> deletePublisherEditor(MainEditorRequest mainEditorRequest);
+    ResponseEntity<HttpStatus> deleteContent(MainEditorRequest mainEditorRequest);
 
 
 }

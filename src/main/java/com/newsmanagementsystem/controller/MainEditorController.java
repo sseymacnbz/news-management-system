@@ -46,7 +46,7 @@ public class MainEditorController{
         return mainEditorService.assignSubscriber(mainEditorRequest);
     }
 
-    @PutMapping("/updateNews") // BURASI SORULACAK
+    @PutMapping("/updateNews")
     public ResponseEntity<HttpStatus> updateNews(@RequestBody UpdateNewsRequest updateNewsRequest){
         return mainEditorService.updateNews(updateNewsRequest);
     }
@@ -66,6 +66,10 @@ public class MainEditorController{
         return  mainEditorService.deletePublisherEditor(mainEditorRequest);
     }
 
+    @DeleteMapping("/deleteContent")
+    public ResponseEntity<HttpStatus> deleteContent(@RequestBody MainEditorRequest mainEditorRequest){
+        return  mainEditorService.deleteContent(mainEditorRequest);
+    }
 
 
 }

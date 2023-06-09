@@ -43,5 +43,8 @@ public class Content{
     @JoinColumn(name = "publisher_editor_id")
     private PublisherEditor publisherEditor;
 
+    public Content(Long id){
+        this.id = id;
+    }
 
 }

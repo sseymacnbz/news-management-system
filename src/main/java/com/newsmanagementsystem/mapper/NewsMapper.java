@@ -21,7 +21,7 @@ public interface NewsMapper {
 
     @Mappings({
             @Mapping(target = "id", source = "newsId"),
-            @Mapping(target = "mainEditor.id", source = "mainEditorId")
+            @Mapping(target = "mainEditor.id", source = "mainEditorId"),
     })
     News updateNewsRequestToNews(UpdateNewsRequest updateNewsRequest);
 }

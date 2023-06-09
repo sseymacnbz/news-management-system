@@ -15,4 +15,6 @@ public interface NewsRepository extends JpaRepository<News, Long>{
 
     List<News> findAllByIsHeadlineOrderByDateDesc(boolean isHeadline);
 
+    List<News> findByContentId(Long contentId);
+
 }
