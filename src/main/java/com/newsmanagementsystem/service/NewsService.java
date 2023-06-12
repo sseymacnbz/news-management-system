@@ -13,9 +13,10 @@ import java.util.List;
 
 public interface NewsService {
     ResponseEntity<HttpStatus> save(News news);
-    ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable);
-    ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable);
-    News findById (Long newsId);
+    ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable, Long userId);
+    ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable, Long userId);
+    boolean isNewsExist (Long newsId);
+    News findById(Long newsId);
     ResponseEntity<HttpStatus> delete(Long newsId);
     ResponseEntity<HttpStatus> deleteNewsByContents(List<Content> contentList);
 

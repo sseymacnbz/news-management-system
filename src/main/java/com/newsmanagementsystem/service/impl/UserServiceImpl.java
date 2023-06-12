@@ -67,9 +67,7 @@ public class UserServiceImpl implements UserService {
 
         boolean result = userRepository.findNonSubscriberUsers().stream().anyMatch(user->user.getId().equals(userId));
         if(result){
-            newsService.displayNewsForNonSubscriber(pageable);
-            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId));
-            return new ResponseEntity<>(HttpStatus.OK);
+            return newsService.displayNewsForNonSubscriber(pageable, userId);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

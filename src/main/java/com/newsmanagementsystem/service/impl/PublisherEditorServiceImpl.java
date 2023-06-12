@@ -11,8 +11,6 @@ import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.PublisherEditorService;
 import com.newsmanagementsystem.service.UserService;
 import com.newsmanagementsystem.utilities.LogUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
@@ -30,8 +28,6 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
 
     @Autowired
     private LogUtil logUtil;
-
-    private static final Logger log = LoggerFactory.getLogger(PublisherEditorServiceImpl.class);
 
     @Override
     public ResponseEntity<HttpStatus> createContent(CreateContentRequest createContentRequest) {

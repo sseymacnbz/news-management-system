@@ -7,13 +7,11 @@ import com.newsmanagementsystem.service.NewsService;
 import com.newsmanagementsystem.utilities.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,7 +41,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ResponseEntity<HttpStatus> delete(Long contentId) {
         try{
-            newsService.deleteNewsByContents(new ArrayList<>());
+            newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
             contentRepository.deleteById(contentId);
             log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId));
             return new ResponseEntity<>(HttpStatus.OK);
@@ -70,6 +68,16 @@ public class ContentServiceImpl implements ContentService {
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public ResponseEntity<Content> findById(Long id) {
+        return new ResponseEntity<>(contentRepository.getReferenceById(id), HttpStatus.OK);
+    }
+
+    @Override
+    public boolean isContentExist(Long id) {
+        return contentRepository.existsContentById(id);
     }
 
 }

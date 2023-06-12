@@ -34,6 +34,7 @@ public class NewsServiceImpl implements NewsService {
 
         try{
             newsRepository.save(news);
+            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.created"));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,26 +42,24 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable) {
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable, Long userId) {
 
-        try {
-            Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
-            List<News> isHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(true);
-            List<News> isNotHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(false);
-            List<News> allNews = Stream.concat(isHeadlineAndPaid.stream(), isNotHeadlineAndPaid.stream()).toList();
+        Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+        List<News> isHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(true);
+        List<News> isNotHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(false);
+        List<News> allNews = Stream.concat(isHeadlineAndPaid.stream(), isNotHeadlineAndPaid.stream()).toList();
 
-            int start = (int) pageableResponse.getOffset();
-            int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
-            List<News> pageContent = allNews.subList(start, end);
-            pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
-            return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, allNews.size()), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        int start = (int) pageableResponse.getOffset();
+        int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
+        List<News> pageContent = allNews.subList(start, end);
+        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
+        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId));
+        return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, allNews.size()), HttpStatus.OK);
+
     }
 
     @Override
-    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable) {
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable, Long userId) {
 
         Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), pageable.getSort()); // Page Requesti oluşturulur
 
@@ -74,7 +73,12 @@ public class NewsServiceImpl implements NewsService {
         List<News> pageContent = newsList.subList(start, end);
 
         pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
+        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId));
         return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, newsList.size()), HttpStatus.OK);
+    }
+    @Override
+    public boolean isNewsExist(Long newsId) {
+        return newsRepository.existsNewsById(newsId) ;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class NewsServiceImpl implements NewsService {
     @Override
     public ResponseEntity<HttpStatus> delete(Long newsId) {
         try{
-            newsRepository.deleteById(newsId);
+            newsRepository.delete(newsRepository.getReferenceById(newsId));
             log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.deleted",newsId));
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){

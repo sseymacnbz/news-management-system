@@ -36,7 +36,6 @@ public class MainEditorServiceImpl implements MainEditorService {
         if(verifyMainEditor(createNewsRequest.getMainEditorId())){
             News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
             newsService.save(news);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.created"));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -103,7 +102,9 @@ public class MainEditorServiceImpl implements MainEditorService {
 
     @Override
     public ResponseEntity<HttpStatus> deleteNews(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
+            newsService.isNewsExist(mainEditorRequest.getId())){
             newsService.delete(mainEditorRequest.getId());
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -125,7 +126,7 @@ public class MainEditorServiceImpl implements MainEditorService {
         if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
                 userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
             userService.delete(mainEditorRequest.getId());
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted"));
+            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId()));
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -133,7 +134,8 @@ public class MainEditorServiceImpl implements MainEditorService {
 
     @Override
     public ResponseEntity<HttpStatus> deleteContent(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
+                contentService.isContentExist(mainEditorRequest.getId())){
             contentService.delete(mainEditorRequest.getId());
             return new ResponseEntity<>(HttpStatus.OK);
         }

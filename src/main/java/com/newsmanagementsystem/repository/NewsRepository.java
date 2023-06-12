@@ -9,12 +9,13 @@ import java.util.List;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long>{
-    List<News> findAllByOrderByDateDesc();
 
     List<News> findAllByIsHeadlineAndNewsTypeEnumOrderByDateDesc(boolean isHeadline, NewsTypeEnum newsTypeEnum);
 
     List<News> findAllByIsHeadlineOrderByDateDesc(boolean isHeadline);
 
     List<News> findByContentId(Long contentId);
+
+    boolean existsNewsById(Long id);
 
 }

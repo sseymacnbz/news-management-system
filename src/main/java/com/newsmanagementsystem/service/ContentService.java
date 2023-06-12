@@ -11,4 +11,7 @@ public interface ContentService {
     ResponseEntity<HttpStatus> delete(Long contentId);
     ResponseEntity<HttpStatus> deleteAllByPublisherEditorId(Long publisherEditorId);
     ResponseEntity<List<Content>> findAllByPublisherEditorId(Long publisherEditorId);
+    ResponseEntity<Content> findById(Long id);
+    boolean isContentExist(Long id);
+
 }

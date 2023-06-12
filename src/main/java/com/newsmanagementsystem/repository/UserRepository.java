@@ -25,6 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Query(value = "SELECT * from user_ WHERE user_type = 'non-subscriber'", nativeQuery = true)
     public List<User> findNonSubscriberUsers();
 
+    public boolean existsUserById (Long userId);
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE user_ SET user_type = 'publisher_editor' WHERE id = :id", nativeQuery = true)
@@ -35,5 +37,9 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Query(value = "UPDATE user_ SET user_type = 'subscriber' WHERE id = :id", nativeQuery = true)
     public void assignToSubscriber(@Param("id") Long id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE user_ SET user_type = 'main_editor' WHERE id = :id", nativeQuery = true)
+    public void assignToMainEditor(@Param("id") Long id);
 
 }
