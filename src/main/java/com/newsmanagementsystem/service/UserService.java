@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface UserService{
-     void createMainEditor(MainEditor mainEditor); //??
+
      ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest);
      ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor);
      ResponseEntity<Page<DisplayNewsResponse>> displayNews(Long userId, Pageable pageable);

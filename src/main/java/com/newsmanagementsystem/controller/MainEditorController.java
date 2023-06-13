@@ -4,6 +4,7 @@ import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.HttpMessageNotReadableException;
 import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
@@ -20,11 +21,6 @@ public class MainEditorController{
     private UserService userService;
     @Autowired
     private MainEditorService mainEditorService;
-
-    @PostMapping
-    public void create(@RequestBody MainEditor mainEditor){
-        userService.createMainEditor(mainEditor);
-    }
 
     @PostMapping("/createNews")
     public ResponseEntity<HttpStatus> createNews(@RequestBody CreateNewsRequest createNewsRequest){

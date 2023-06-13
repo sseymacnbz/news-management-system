@@ -38,11 +38,6 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public void createMainEditor(MainEditor mainEditor) {
-        userRepository.save(mainEditor);
-    }
-
-    @Override
     public ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest) {
         User user = UserMapper.INSTANCE.createPublicUserRequest(createUserRequest);
         userRepository.save(user);

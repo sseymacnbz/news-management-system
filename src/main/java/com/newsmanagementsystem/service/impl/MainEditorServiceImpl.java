@@ -4,6 +4,10 @@ import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.HttpMessageNotReadableException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.MainEditorNotFoundException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFound;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFound;
 import com.newsmanagementsystem.mapper.NewsMapper;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
@@ -31,14 +35,19 @@ public class MainEditorServiceImpl implements MainEditorService {
     private ContentService contentService;
 
     @Override
-    public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest) {
+    public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest){
 
-        if(verifyMainEditor(createNewsRequest.getMainEditorId())){
-            News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
-            newsService.save(news);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+        try{
+            if(verifyMainEditor(createNewsRequest.getMainEditorId())){
+                News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
+                newsService.save(news);
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
+            else throw new MainEditorNotFoundException(createNewsRequest.getMainEditorId());
+
+        }catch(HttpMessageNotReadableException ex){
+            throw new HttpMessageNotReadableException(ex.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -47,7 +56,7 @@ public class MainEditorServiceImpl implements MainEditorService {
             publisherEditorService.createPublisherEditor(createPublisherEditorRequest);
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        else throw new MainEditorNotFoundException(createPublisherEditorRequest.getMainEditorId());
     }
 
     @Override
@@ -63,10 +72,10 @@ public class MainEditorServiceImpl implements MainEditorService {
                 log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", mainEditorRequest.getId()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            else throw new UserNotFound(mainEditorRequest.getId());
 
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
+        else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
     @Override
@@ -81,34 +90,34 @@ public class MainEditorServiceImpl implements MainEditorService {
                 log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", mainEditorRequest.getId()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            else throw new UserNotFound(mainEditorRequest.getId());
         }
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
     @Override
     public ResponseEntity<HttpStatus> updateNews(UpdateNewsRequest updateNewsRequest) {
+        if(verifyMainEditor(updateNewsRequest.getMainEditorId())) {
+            if ((newsService.findById(updateNewsRequest.getNewsId()) != null)) {
 
-        if((newsService.findById(updateNewsRequest.getNewsId()) != null) &&
-                verifyMainEditor(updateNewsRequest.getMainEditorId())){
-            News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
-            news.setContent(new Content(newsService.findById(updateNewsRequest.getNewsId()).getContent().getId()));
-            newsService.save(news);
-            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.updated", updateNewsRequest.getNewsId()));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
+                news.setContent(new Content(newsService.findById(updateNewsRequest.getNewsId()).getContent().getId()));
+                newsService.save(news);
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(), "news.updated", updateNewsRequest.getNewsId()));
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else throw new NewsNotFound(updateNewsRequest.getNewsId());
+        } else throw new MainEditorNotFoundException(updateNewsRequest.getMainEditorId());
     }
 
     @Override
     public ResponseEntity<HttpStatus> deleteNews(MainEditorRequest mainEditorRequest) {
-
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
-            newsService.isNewsExist(mainEditorRequest.getId())){
-            newsService.delete(mainEditorRequest.getId());
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+  ////////
+            if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
+                newsService.isNewsExist(mainEditorRequest.getId())){
+                newsService.delete(mainEditorRequest.getId());
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
