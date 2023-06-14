@@ -1,9 +1,13 @@
 package com.newsmanagementsystem.service.impl;
 
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotCreatedException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotFoundException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.repository.ContentRepository;
 import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.NewsService;
+import com.newsmanagementsystem.service.UserService;
 import com.newsmanagementsystem.utilities.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +28,11 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private LogUtil logUtil;
 
+    private UserService userService;
+    public void setUserService(UserService userService){
+        this.userService = userService;
+    }
+
     private static final Logger log = LoggerFactory.getLogger(ContentServiceImpl.class);
 
     @Override
@@ -31,43 +40,49 @@ public class ContentServiceImpl implements ContentService {
 
         try{
             contentRepository.save(content);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.created"));
+            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ContentNotCreatedException();
         }
     }
 
     @Override
     public ResponseEntity<HttpStatus> delete(Long contentId) {
-        try{
-            newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
-            contentRepository.deleteById(contentId);
-            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if(contentRepository.existsContentById(contentId)){
+            try{
+                newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
+                contentRepository.deleteById(contentId);
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId,HttpStatus.OK.value()));
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch(Exception e){
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }else throw new ContentNotFoundException(contentId);
     }
 
     @Override
     public ResponseEntity<HttpStatus> deleteAllByPublisherEditorId(Long publisherEditorId) {
 
-        try{
-            contentRepository.findAllByPublisherEditorId(publisherEditorId).stream().forEach(content -> delete(content.getId()));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if(userService.findPublisherEditors().stream().anyMatch(publisherEditor->publisherEditor.getId().equals(publisherEditorId))){
+            try{
+                contentRepository.findAllByPublisherEditorId(publisherEditorId).stream().forEach(content -> delete(content.getId()));
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch(Exception e){
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }else throw new UserNotFoundException(publisherEditorId);
     }
 
     @Override
     public ResponseEntity<List<Content>> findAllByPublisherEditorId(Long publisherEditorId) {
-        try{
-            return new ResponseEntity<>(contentRepository.findAllByPublisherEditorId(publisherEditorId), HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if(userService.findPublisherEditors().stream().anyMatch(publisherEditor->publisherEditor.getId().equals(publisherEditorId))){
+            try{
+                return new ResponseEntity<>(contentRepository.findAllByPublisherEditorId(publisherEditorId), HttpStatus.OK);
+            }catch(Exception e){
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }else throw new UserNotFoundException(publisherEditorId);
     }
 
     @Override

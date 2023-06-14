@@ -1,12 +1,11 @@
 package com.newsmanagementsystem.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -15,12 +14,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorColumn(name = "user_type")
 @DiscriminatorValue("non-subscriber")
 @Table(name = "user_")
-public class User{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class User extends BaseEntity{
 
     @Column(name = "name")
     private String name;

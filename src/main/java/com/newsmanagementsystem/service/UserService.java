@@ -2,7 +2,6 @@ package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
-import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.User;
 import org.springframework.data.domain.Page;

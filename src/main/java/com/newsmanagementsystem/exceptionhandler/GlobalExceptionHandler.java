@@ -1,9 +1,7 @@
 package com.newsmanagementsystem.exceptionhandler;
 
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.HttpMessageNotReadableException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.MainEditorNotFoundException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFound;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFound;
+
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,39 +17,52 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Object> httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request){
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message",ex.getMessage());
-        body.put("path",request.getDescription(false));
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
+    private static final String TIMESTAMP = "timestamp";
+    private static final String MESSAGE = "message";
+    private static final String PATH = "path";
 
     @ExceptionHandler(MainEditorNotFoundException.class)
     public ResponseEntity<Object> mainEditorNotFoundException(MainEditorNotFoundException ex, WebRequest request){
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message",ex.getMessage());
-        body.put("path",request.getDescription(false));
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UserNotFound.class)
-    public ResponseEntity<Object> userNotAssignedError(UserNotFound ex, WebRequest request){
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> userNotAssignedError(UserNotFoundException ex, WebRequest request){
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message",ex.getMessage());
-        body.put("path",request.getDescription(false));
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(NewsNotFound.class)
-    public ResponseEntity<Object> newsNotAssignedError(NewsNotFound ex, WebRequest request){
+    @ExceptionHandler(NewsNotFoundException.class)
+    public ResponseEntity<Object> newsNotAssignedError(NewsNotFoundException ex, WebRequest request){
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message",ex.getMessage());
-        body.put("path",request.getDescription(false));
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ContentNotFoundException.class)
+    public ResponseEntity<Object> contentNotFoundException(ContentNotFoundException ex, WebRequest request){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ContentNotCreatedException.class)
+    public ResponseEntity<Object> contentNotCreatedException(ContentNotCreatedException ex, WebRequest request){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 }

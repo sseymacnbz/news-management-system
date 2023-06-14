@@ -1,6 +1,7 @@
 package com.newsmanagementsystem.service.impl;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
@@ -34,7 +35,7 @@ public class NewsServiceImpl implements NewsService {
 
         try{
             newsRepository.save(news);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.created"));
+            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -52,8 +53,8 @@ public class NewsServiceImpl implements NewsService {
         int start = (int) pageableResponse.getOffset();
         int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
         List<News> pageContent = allNews.subList(start, end);
-        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
-        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId));
+        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId(),HttpStatus.OK.value())));
+        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId,HttpStatus.OK.value()));
         return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, allNews.size()), HttpStatus.OK);
 
     }
@@ -72,8 +73,8 @@ public class NewsServiceImpl implements NewsService {
         int end = Math.min((start + pageableResponse.getPageSize()), newsList.size());
         List<News> pageContent = newsList.subList(start, end);
 
-        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId())));
-        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId));
+        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId(),HttpStatus.OK.value())));
+        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId,HttpStatus.OK.value()));
         return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, newsList.size()), HttpStatus.OK);
     }
     @Override
@@ -88,13 +89,15 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public ResponseEntity<HttpStatus> delete(Long newsId) {
-        try{
-            newsRepository.delete(newsRepository.getReferenceById(newsId));
-            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.deleted",newsId));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if(isNewsExist(newsId)){
+            try{
+                newsRepository.delete(newsRepository.getReferenceById(newsId));
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.deleted",newsId,HttpStatus.OK.value()));
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (Exception e){
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }else throw new NewsNotFoundException(newsId);
     }
 
     @Override

@@ -11,14 +11,14 @@ public class LogUtil {
 
     private ResourceBundle bundle = ResourceBundle.getBundle("messages");
 
-    public String getMessage(String methodName,String key){
-        return "Method->"+methodName+", message->"+bundle.getString(key)+", date->"+LocalDateTime.now();
+    public String getMessage(String methodName,String key, int statusCode){
+        return "Method-> "+methodName+", Message-> "+bundle.getString(key)+ ", Status Code-> "+statusCode +", Date-> "+LocalDateTime.now();
     }
 
-    public String getMessageWithId(String methodName, String key,Long id){
+    public String getMessageWithId(String methodName, String key,Long id, int statusCode){
 
         String message = bundle.getString(key);
         String result = MessageFormat.format(message, id);
-        return "Method->"+methodName+", message->"+result+", date->"+LocalDateTime.now();
+        return "Method-> "+methodName+", Message-> "+result+ ", Status Code-> "+ statusCode +", Date-> "+LocalDateTime.now();
     }
 }

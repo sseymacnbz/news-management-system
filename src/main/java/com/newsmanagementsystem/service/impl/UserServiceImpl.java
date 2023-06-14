@@ -4,7 +4,6 @@ package com.newsmanagementsystem.service.impl;
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.mapper.UserMapper;
-import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.repository.UserRepository;
@@ -31,9 +30,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private NewsService newsService;
     @Autowired
-    private ContentService contentService;
-    @Autowired
     private LogUtil logUtil;
+
+    private ContentService contentService;
+    public void setUserService(ContentService contentService){
+        this.contentService = contentService;
+    }
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest) {
         User user = UserMapper.INSTANCE.createPublicUserRequest(createUserRequest);
         userRepository.save(user);
-        log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.created"));
+        log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.created",HttpStatus.OK.value()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor) {
         try{
             userRepository.save(publisherEditor);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.created"));
+            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         catch (Exception e){
@@ -91,6 +93,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findMainEditors() {
+
         return userRepository.findMainEditors();
     }
 

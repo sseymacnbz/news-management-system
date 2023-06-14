@@ -4,10 +4,10 @@ import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.HttpMessageNotReadableException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.MainEditorNotFoundException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFound;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFound;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
 import com.newsmanagementsystem.mapper.NewsMapper;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
@@ -36,18 +36,12 @@ public class MainEditorServiceImpl implements MainEditorService {
 
     @Override
     public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest){
-
-        try{
-            if(verifyMainEditor(createNewsRequest.getMainEditorId())){
-                News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
-                newsService.save(news);
-                return new ResponseEntity<>(HttpStatus.CREATED);
-            }
-            else throw new MainEditorNotFoundException(createNewsRequest.getMainEditorId());
-
-        }catch(HttpMessageNotReadableException ex){
-            throw new HttpMessageNotReadableException(ex.getMessage());
+        if(verifyMainEditor(createNewsRequest.getMainEditorId())){
+            News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
+            newsService.save(news);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
+        else throw new MainEditorNotFoundException(createNewsRequest.getMainEditorId());
     }
 
     @Override
@@ -69,10 +63,10 @@ public class MainEditorServiceImpl implements MainEditorService {
 
             if(result){
                 userService.assignToPublisherEditor(mainEditorRequest.getId());
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", mainEditorRequest.getId()));
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
-            else throw new UserNotFound(mainEditorRequest.getId());
+            else throw new UserNotFoundException(mainEditorRequest.getId());
 
         }
         else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
@@ -87,10 +81,10 @@ public class MainEditorServiceImpl implements MainEditorService {
 
             if (result) {
                 userService.assignToSubscriber(mainEditorRequest.getId());
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", mainEditorRequest.getId()));
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
-            else throw new UserNotFound(mainEditorRequest.getId());
+            else throw new UserNotFoundException(mainEditorRequest.getId());
         }
         else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
@@ -103,52 +97,56 @@ public class MainEditorServiceImpl implements MainEditorService {
                 News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
                 news.setContent(new Content(newsService.findById(updateNewsRequest.getNewsId()).getContent().getId()));
                 newsService.save(news);
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(), "news.updated", updateNewsRequest.getNewsId()));
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(), "news.updated", updateNewsRequest.getNewsId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
-            }else throw new NewsNotFound(updateNewsRequest.getNewsId());
+            }else throw new NewsNotFoundException(updateNewsRequest.getNewsId());
         } else throw new MainEditorNotFoundException(updateNewsRequest.getMainEditorId());
     }
 
     @Override
     public ResponseEntity<HttpStatus> deleteNews(MainEditorRequest mainEditorRequest) {
-  ////////
-            if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
-                newsService.isNewsExist(mainEditorRequest.getId())){
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if(newsService.isNewsExist(mainEditorRequest.getId())){
                 newsService.delete(mainEditorRequest.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }else throw new NewsNotFoundException(mainEditorRequest.getId());
+        }
+        else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
     @Override
     public ResponseEntity<HttpStatus> deleteSubscriber(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) && userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
-            userService.delete(mainEditorRequest.getId());
-            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.deleted", mainEditorRequest.getId()));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if(userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
+                userService.delete(mainEditorRequest.getId());
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else throw new UserNotFoundException(mainEditorRequest.getId());
+        }else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
     @Override
     public ResponseEntity<HttpStatus> deletePublisherEditor(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
-                userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
-            userService.delete(mainEditorRequest.getId());
-            log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId()));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if(userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
+                userService.delete(mainEditorRequest.getId());
+                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else throw new UserNotFoundException(mainEditorRequest.getId());
+        }else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
     @Override
     public ResponseEntity<HttpStatus> deleteContent(MainEditorRequest mainEditorRequest) {
-        if(verifyMainEditor(mainEditorRequest.getMainEditorId()) &&
-                contentService.isContentExist(mainEditorRequest.getId())){
-            contentService.delete(mainEditorRequest.getId());
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if(contentService.isContentExist(mainEditorRequest.getId())){
+                contentService.delete(mainEditorRequest.getId());
+                return new ResponseEntity<>(HttpStatus.OK);
+            }throw new ContentNotFoundException(mainEditorRequest.getId());
+        }else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
 

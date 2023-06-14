@@ -4,8 +4,6 @@ import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.HttpMessageNotReadableException;
-import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

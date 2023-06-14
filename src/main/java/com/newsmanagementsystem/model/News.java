@@ -4,25 +4,19 @@ import com.newsmanagementsystem.model.enums.CategoryEnum;
 import com.newsmanagementsystem.model.enums.NewsTypeEnum;
 import com.newsmanagementsystem.model.enums.ScopeEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
 @Table(name = "news")
-public class News{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class News extends BaseEntity{
 
     @Column(name = "date")
     private LocalDate date;

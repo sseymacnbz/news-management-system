@@ -3,6 +3,7 @@ package com.newsmanagementsystem.service.impl;
 
 import com.newsmanagementsystem.dto.requests.CreateContentRequest;
 import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
 import com.newsmanagementsystem.mapper.ContentMapper;
 import com.newsmanagementsystem.mapper.PublisherEditorMapper;
 import com.newsmanagementsystem.model.Content;
@@ -38,8 +39,7 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
             Content content = ContentMapper.INSTANCE.createContentRequestToContent(createContentRequest);
             contentService.save(content);
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }else throw new UserNotFoundException(createContentRequest.getPublisherEditorId());
     }
 
     @Override
