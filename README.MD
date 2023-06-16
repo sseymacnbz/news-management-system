@@ -35,19 +35,19 @@
 
 ## Application Scenario
 * The main editor will be created automatically when the application is started.
-* Create publisher editor with main editor id in main-editor-controller.
-* Create 3 user in user-controller.
-* Assign one of the user to subscriber in main-editor-controller.
-* Assign one of the user to publisher editor in main-editor-controller.
-* Create different contents with publisher editor ids in publisher-editor-controller.
-* Create different news with content id and main editor id in main-editor-controller. Do not use all contents to create news.
-* Update news with main editor id and news id in main-editor-controller
+* Create publisher editor with main editor id in 'createPublisherEditor' endpoint in main-editor-controller.
+* Create 3 user in 'create' endpoint in user-controller.
+* Assign one of the user to subscriber in 'assignSubscriber' in main-editor-controller.
+* Assign one of the user to publisher editor in 'assignPublisherEditor' endpoint in main-editor-controller.
+* Create different contents with publisher editor ids in 'createContent' endpoint in publisher-editor-controller.
+* Create different news with content id and main editor id in 'createNews' endpoint in main-editor-controller. Do not use all contents to create news.
+* Update news with main editor id and news id in 'updateNews' endpoint in main-editor-controller
 * In the getNewsContent endpoint in the main-editor-controller, set false to see unused news content, or true to see used news content.
   You can also set pageability here.
 * To see normal users news, use 'news' endpoint with user id in user-controller.
 * To see subscribers news, use 'news' endpoint with user id in subscriber-controller.
-* Delete subscriber with main editor id and user id in main-editor-controller.
-* Delete news with  main editor id and news id in main-editor-controller.
-* Delete content with main editor id and content id in main-editor-controller. This will also delete news connected with deleted content.
-* Delete publisher editor with main editor id and publisher editor id in main-editor-controller.
+* Delete subscriber with main editor id and user id in 'deleteSubscriber' inmain-editor-controller.
+* Delete news with  main editor id and news id in 'deleteNews' endpoint in main-editor-controller.
+* Delete content with main editor id and content id in 'deleteContent' endpoint in main-editor-controller. This will also delete news connected with deleted content.
+* Delete publisher editor with main editor id and publisher editor id in 'deletePublisherEditor' endpoint in main-editor-controller.
   This will also delete contents and news connected with deleted publisher editor.
