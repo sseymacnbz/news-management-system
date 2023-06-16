@@ -13,14 +13,18 @@ arrangements about news, contents and users.![img_swagger.png](img%2Fimg_swagger
 
 
 ## How Is The Project Ready To Work?
-1) Click on the 'Download ZIP' under the Code button and download.![img_download.png](img%2Fimg_download.png)
+1) Click on the 'Download ZIP' under the Code button and download.
+![img_download.png](img%2Fimg_download.png)
 2) Extract the ZIP file.
 3) Open IntelliJ IDEA Community Edition.
-4) Go to File>Open![img_open.png](img%2Fimg_open.png)
-5) Find the project, select it and click the OK button![img_chooseProject.PNG](img%2Fimg_chooseProject.PNG)
+4) Go to File>Open
+![img_open.png](img%2Fimg_open.png)
+5) Find the project, select it and click the OK button
+![img_chooseProject.PNG](img%2Fimg_chooseProject.PNG)
 6) Follow the progress bar at the bottom to understand the project getting ready.
 7) Open the pgAdmin 4 application that comes with PostgreSql.
-8) Right-click on Databases and Create Database.![img_db_create.png](img%2Fimg_db_create.png)
+8) Right-click on Databases and Create Database.
+![img_db_create.png](img%2Fimg_db_create.png)
 9) Give the database name news-management-system in the General section and save.
 10) In the Intellij IDEA go to news-management-system-master>src>main>resources>application.properties and write your username and password for database connection
 11) Right-click on the NewsManagementSystemApplication under the news-management-system-master>src>main>java>com>newsmanagementsystem and select "Run 'NewsManagement...main()' "
