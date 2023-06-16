@@ -8,14 +8,15 @@ import java.util.ResourceBundle;
 
 @Component
 public class LogUtil {
+    private LogUtil() {}
 
-    private ResourceBundle bundle = ResourceBundle.getBundle("messages");
+    private static ResourceBundle bundle = ResourceBundle.getBundle("messages");
 
-    public String getMessage(String methodName,String key, int statusCode){
+    public static String getMessage(String methodName,String key, int statusCode){
         return "Method-> "+methodName+", Message-> "+bundle.getString(key)+ ", Status Code-> "+statusCode +", Date-> "+LocalDateTime.now();
     }
 
-    public String getMessageWithId(String methodName, String key,Long id, int statusCode){
+    public static String getMessageWithId(String methodName, String key,Long id, int statusCode){
 
         String message = bundle.getString(key);
         String result = MessageFormat.format(message, id);

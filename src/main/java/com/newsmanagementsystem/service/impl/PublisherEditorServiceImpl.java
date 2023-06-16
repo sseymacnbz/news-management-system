@@ -11,9 +11,10 @@ import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.PublisherEditorService;
 import com.newsmanagementsystem.service.UserService;
-import com.newsmanagementsystem.utilities.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,8 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private ContentService contentService;
-
-    @Autowired
-    private LogUtil logUtil;
-
     @Override
     public ResponseEntity<HttpStatus> createContent(CreateContentRequest createContentRequest) {
 
@@ -52,5 +48,15 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> displayContents(Pageable pageable, Long publisherEditorId) {
+        boolean result = userService.findNonSubscriberUsers().stream().anyMatch(user->user.getId().equals(publisherEditorId));
+        if(result){
+            Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), pageable.getSort());
+        }
+
+        return null;
     }
 }

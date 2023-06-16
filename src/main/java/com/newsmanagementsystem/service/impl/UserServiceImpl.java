@@ -29,8 +29,6 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private NewsService newsService;
-    @Autowired
-    private LogUtil logUtil;
 
     private ContentService contentService;
     public void setUserService(ContentService contentService){
@@ -43,7 +41,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest) {
         User user = UserMapper.INSTANCE.createPublicUserRequest(createUserRequest);
         userRepository.save(user);
-        log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.created",HttpStatus.OK.value()));
+        log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.created",HttpStatus.OK.value()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -51,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor) {
         try{
             userRepository.save(publisherEditor);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.created",HttpStatus.CREATED.value()));
+            log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         catch (Exception e){
@@ -60,13 +58,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<Page<DisplayNewsResponse>> displayNews(Long userId, Pageable pageable) {
-
-        boolean result = userRepository.findNonSubscriberUsers().stream().anyMatch(user->user.getId().equals(userId));
-        if(result){
-            return newsService.displayNewsForNonSubscriber(pageable, userId);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNews(Pageable pageable) {
+        return newsService.displayNewsForNonSubscriber(pageable);
     }
 
     @Override

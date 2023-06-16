@@ -30,13 +30,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContentServiceImpl implements ContentService {
-
+    
     @Autowired
     private ContentRepository contentRepository;
     @Autowired
     private NewsService newsService;
-    @Autowired
-    private LogUtil logUtil;
 
     private UserService userService;
     public void setUserService(UserService userService){
@@ -58,7 +56,7 @@ public class ContentServiceImpl implements ContentService {
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());
             List<Content> pageContent = contentList.subList(start, end);
-            pageContent.stream().forEach(content -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
+            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
             return new ResponseEntity<>(new PageImpl<>(pageContent, pageableResponse, contentList.size()), HttpStatus.OK);
         }else throw new ContentsNotFoundException();
     }
@@ -80,14 +78,14 @@ public class ContentServiceImpl implements ContentService {
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());
             List<Content> pageContent = contentList.subList(start, end);
-            pageContent.stream().forEach(content -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
+            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
             return new ResponseEntity<>(new PageImpl<>(pageContent, pageableResponse, contentList.size()), HttpStatus.OK);
         } else{
             List<Content> contentList = contentRepository.findAll();
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());
             List<Content> pageContent = contentList.subList(start, end);
-            pageContent.stream().forEach(content -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
+            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
             return new ResponseEntity<>(new PageImpl<>(pageContent, pageableResponse, contentList.size()), HttpStatus.OK);
         }
     }
@@ -97,7 +95,7 @@ public class ContentServiceImpl implements ContentService {
 
         try{
             contentRepository.save(content);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.created",HttpStatus.CREATED.value()));
+            log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch(Exception e){
             throw new ContentNotCreatedException();
@@ -110,7 +108,7 @@ public class ContentServiceImpl implements ContentService {
             try{
                 newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
                 contentRepository.deleteById(contentId);
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId,HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId,HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }catch(Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

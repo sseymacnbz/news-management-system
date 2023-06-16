@@ -74,4 +74,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put(PATH,request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Object> unauthorizedAccessException(UnauthorizedAccessException ex, WebRequest request){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 }

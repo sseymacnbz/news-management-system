@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MainEditorRequest {
-    Long mainEditorId;
-    Long id;
+    private Long mainEditorId;
+    private Long id;
 }

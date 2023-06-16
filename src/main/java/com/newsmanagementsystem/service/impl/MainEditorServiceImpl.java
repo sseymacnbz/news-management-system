@@ -26,8 +26,6 @@ import java.util.List;
 
 @Service
 public class MainEditorServiceImpl implements MainEditorService {
-    @Autowired
-    private LogUtil logUtil;
     private static final Logger log = LoggerFactory.getLogger(MainEditorServiceImpl.class);
     @Autowired
     private NewsService newsService;
@@ -75,7 +73,7 @@ public class MainEditorServiceImpl implements MainEditorService {
 
             if(result){
                 userService.assignToPublisherEditor(mainEditorRequest.getId());
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else throw new UserNotFoundException(mainEditorRequest.getId());
@@ -93,7 +91,7 @@ public class MainEditorServiceImpl implements MainEditorService {
 
             if (result) {
                 userService.assignToSubscriber(mainEditorRequest.getId());
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else throw new UserNotFoundException(mainEditorRequest.getId());
@@ -109,7 +107,7 @@ public class MainEditorServiceImpl implements MainEditorService {
                 News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
                 news.setContent(new Content(newsService.findById(updateNewsRequest.getNewsId()).getContent().getId()));
                 newsService.save(news);
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(), "news.updated", updateNewsRequest.getNewsId(),HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(), "news.updated", updateNewsRequest.getNewsId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }else throw new NewsNotFoundException(updateNewsRequest.getNewsId());
         } else throw new MainEditorNotFoundException(updateNewsRequest.getMainEditorId());
@@ -132,7 +130,7 @@ public class MainEditorServiceImpl implements MainEditorService {
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
             if(userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
                 userService.delete(mainEditorRequest.getId());
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             } else throw new UserNotFoundException(mainEditorRequest.getId());
         }else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
@@ -144,7 +142,7 @@ public class MainEditorServiceImpl implements MainEditorService {
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
             if(userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
                 userService.delete(mainEditorRequest.getId());
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }else throw new UserNotFoundException(mainEditorRequest.getId());
         }else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());

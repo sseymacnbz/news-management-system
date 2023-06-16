@@ -26,9 +26,6 @@ public class NewsServiceImpl implements NewsService {
     @Autowired
     private NewsRepository newsRepository;
 
-    @Autowired
-    private LogUtil logUtil;
-
     private static final Logger log = LoggerFactory.getLogger(NewsServiceImpl.class);
 
     @Override
@@ -45,7 +42,7 @@ public class NewsServiceImpl implements NewsService {
 
         try{
             newsRepository.save(news);
-            log.info(logUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.created",HttpStatus.CREATED.value()));
+            log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -63,14 +60,14 @@ public class NewsServiceImpl implements NewsService {
         int start = (int) pageableResponse.getOffset();
         int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
         List<News> pageContent = allNews.subList(start, end);
-        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId(),HttpStatus.OK.value())));
-        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId,HttpStatus.OK.value()));
+        pageContent.stream().forEach(news -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId(),HttpStatus.OK.value())));
+        log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId,HttpStatus.OK.value()));
         return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, allNews.size()), HttpStatus.OK);
 
     }
 
     @Override
-    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable, Long userId) {
+    public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable) {
 
         Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), pageable.getSort()); // Page Requesti oluşturulur
 
@@ -83,8 +80,8 @@ public class NewsServiceImpl implements NewsService {
         int end = Math.min((start + pageableResponse.getPageSize()), newsList.size());
         List<News> pageContent = newsList.subList(start, end);
 
-        pageContent.stream().forEach(news -> log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId(),HttpStatus.OK.value())));
-        log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",userId,HttpStatus.OK.value()));
+        pageContent.stream().forEach(news -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.display",news.getId(),HttpStatus.OK.value())));
+        log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display.news",HttpStatus.OK.value()));
         return new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(pageContent), pageableResponse, newsList.size()), HttpStatus.OK);
     }
     @Override
@@ -102,7 +99,7 @@ public class NewsServiceImpl implements NewsService {
         if(isNewsExist(newsId)){
             try{
                 newsRepository.delete(newsRepository.getReferenceById(newsId));
-                log.info(logUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.deleted",newsId,HttpStatus.OK.value()));
+                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"news.deleted",newsId,HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

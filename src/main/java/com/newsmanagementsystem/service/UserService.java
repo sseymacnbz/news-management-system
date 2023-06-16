@@ -15,7 +15,7 @@ public interface UserService{
 
      ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest);
      ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor);
-     ResponseEntity<Page<DisplayNewsResponse>> displayNews(Long userId, Pageable pageable);
+     ResponseEntity<Page<DisplayNewsResponse>> displayNews(Pageable pageable);
      ResponseEntity<HttpStatus> assignToPublisherEditor(Long userId);
      ResponseEntity<HttpStatus> assignToSubscriber(Long userId);
      List<User> findMainEditors();

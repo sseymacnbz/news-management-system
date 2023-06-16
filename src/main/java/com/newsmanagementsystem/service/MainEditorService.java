@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-
 public interface MainEditorService {
     ResponseEntity<Page<Content>> getNewsContent(boolean contentWithNews, Pageable pageable);
     ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest);
