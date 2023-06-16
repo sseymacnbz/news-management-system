@@ -4,12 +4,19 @@ import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
+import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/mainEditors")
@@ -19,6 +26,12 @@ public class MainEditorController{
     private UserService userService;
     @Autowired
     private MainEditorService mainEditorService;
+
+    @GetMapping("/getNewsContent")
+    @PageableAsQueryParam
+    public ResponseEntity<Page<Content>> getNewsContent(@RequestParam boolean contentWithNews, @Parameter(hidden = true) Pageable pageable){
+        return new ResponseEntity<>(mainEditorService.getNewsContent(contentWithNews,pageable).getBody(), HttpStatus.OK);
+    }
 
     @PostMapping("/createNews")
     public ResponseEntity<HttpStatus> createNews(@RequestBody CreateNewsRequest createNewsRequest){

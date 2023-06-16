@@ -18,14 +18,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<HttpStatus> create(CreateUserRequest createUserRequest){
-        return userService.createPublicUser(createUserRequest);
-    }
-
     @GetMapping(value = "/news")
     @PageableAsQueryParam
     public ResponseEntity<Page<DisplayNewsResponse>> displayNews(@RequestParam Long userId, @Parameter(hidden = true) Pageable pageable){
         return userService.displayNews(userId, pageable);
+    }
+
+    @PostMapping(value = "/create")
+    public ResponseEntity<HttpStatus> create(CreateUserRequest createUserRequest){
+        return userService.createPublicUser(createUserRequest);
     }
 }

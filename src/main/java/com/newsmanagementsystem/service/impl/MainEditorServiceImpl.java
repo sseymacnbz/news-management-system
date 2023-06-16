@@ -16,9 +16,13 @@ import com.newsmanagementsystem.utilities.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MainEditorServiceImpl implements MainEditorService {
@@ -33,6 +37,14 @@ public class MainEditorServiceImpl implements MainEditorService {
     private PublisherEditorService publisherEditorService;
     @Autowired
     private ContentService contentService;
+
+    @Override
+    public ResponseEntity<Page<Content>> getNewsContent(boolean contentWithNews, Pageable pageable) {
+
+        if(contentWithNews){
+            return new ResponseEntity<>(contentService.getContentsThatIsNews(pageable).getBody(),HttpStatus.OK);
+        }else return new ResponseEntity<>(contentService.getContentsThatIsNotNews(pageable).getBody(),HttpStatus.OK);
+    }
 
     @Override
     public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest){

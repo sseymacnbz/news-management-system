@@ -12,6 +12,7 @@ import java.util.List;
 
 
 public interface NewsService {
+    ResponseEntity<List<Long>> newsContents();
     ResponseEntity<HttpStatus> save(News news);
     ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable, Long userId);
     ResponseEntity<Page<DisplayNewsResponse>> displayNewsForNonSubscriber(Pageable pageable, Long userId);

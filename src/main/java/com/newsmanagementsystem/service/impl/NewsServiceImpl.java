@@ -1,6 +1,7 @@
 package com.newsmanagementsystem.service.impl;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentsNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.model.Content;
@@ -29,6 +30,15 @@ public class NewsServiceImpl implements NewsService {
     private LogUtil logUtil;
 
     private static final Logger log = LoggerFactory.getLogger(NewsServiceImpl.class);
+
+    @Override
+    public ResponseEntity<List<Long>> newsContents() {
+        try {
+            return ResponseEntity.ok(newsRepository.newsContents());
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @Override
     public ResponseEntity<HttpStatus> save(News news) {

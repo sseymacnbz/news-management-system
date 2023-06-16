@@ -12,5 +12,7 @@ public interface ContentMapper {
 
     @Mapping(target = "publisherEditor.id", source = "publisherEditorId")
     Content createContentRequestToContent(CreateContentRequest createContentRequest);
+
+
 }
 
