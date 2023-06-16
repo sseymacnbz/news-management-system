@@ -17,7 +17,7 @@ arrangements about news, contents and users.![img_swagger.png](img%2Fimg_swagger
 ![img_download.png](img%2Fimg_download.png)
 2) Extract the ZIP file.
 3) Open IntelliJ IDEA Community Edition.
-4) Go to File>Open
+4) Go to File>Open <br />
 ![img_open.png](img%2Fimg_open.png)
 5) Find the project, select it and click the OK button
 ![img_chooseProject.PNG](img%2Fimg_chooseProject.PNG)
