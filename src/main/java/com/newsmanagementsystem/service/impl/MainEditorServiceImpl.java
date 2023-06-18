@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+
 
 @Service
 public class MainEditorServiceImpl implements MainEditorService {
@@ -141,6 +141,7 @@ public class MainEditorServiceImpl implements MainEditorService {
 
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
             if(userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
+                contentService.deleteAllByPublisherEditorId(mainEditorRequest.getId());
                 userService.delete(mainEditorRequest.getId());
                 log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);

@@ -1,7 +1,6 @@
 package com.newsmanagementsystem.service.impl;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentsNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.model.Content;
