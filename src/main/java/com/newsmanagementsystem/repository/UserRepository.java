@@ -3,6 +3,8 @@ package com.newsmanagementsystem.repository;
 import com.newsmanagementsystem.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,15 +13,18 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long>{
 
     @Query(value = "SELECT U.id FROM User U WHERE U.userType='main_editor'")
-    List<User> findMainEditors();
+    List<Long> findMainEditors();
 
     @Query(value = "SELECT U.id FROM User U WHERE U.userType='publisher_editor'")
-    List<User> findPublisherEditors();
+    List<Long> findPublisherEditors();
 
     @Query(value = "SELECT U.id FROM User U WHERE U.userType = 'subscriber'")
-    List<User> findSubscriberUsers();
+    List<Long> findSubscriberUsers();
 
     @Query(value = "SELECT U.id FROM User U WHERE U.userType = 'non-subscriber'")
-    List<User> findNonSubscriberUsers();
+    List<Long> findNonSubscriberUsers();
+
+    //@Query(value = "UPDATE user_ SET user_type='subscriber' WHERE id=:userId", nativeQuery = true)
+    //ResponseEntity<HttpStatus> assignToSubscriber(Long userId);
 
 }

@@ -1,6 +1,8 @@
 package com.newsmanagementsystem.mapper;
 
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
+import com.newsmanagementsystem.model.PublisherEditor;
+import com.newsmanagementsystem.model.Subscriber;
 import com.newsmanagementsystem.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -9,4 +11,8 @@ import org.mapstruct.factory.Mappers;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     User createPublicUserRequest(CreateUserRequest createPublicUserRequest);
+
+    Subscriber convertToSubscriber(User user);
+
+    PublisherEditor convertToPublisherEditor(User user);
 }

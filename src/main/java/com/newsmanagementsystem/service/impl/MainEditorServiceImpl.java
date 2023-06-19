@@ -68,16 +68,14 @@ public class MainEditorServiceImpl implements MainEditorService {
 
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
 
-            boolean result = userService.findSubscriberUsers().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId())) ||
-                    userService.findNonSubscriberUsers().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId()));
+            boolean result = userService.findSubscriberUsers().stream().anyMatch(userId -> userId.equals(mainEditorRequest.getId())) ||
+                    userService.findNonSubscriberUsers().stream().anyMatch(userId -> userId.equals(mainEditorRequest.getId()));
 
             if(result){
                 userService.assignToPublisherEditor(mainEditorRequest.getId());
-                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else throw new UserNotFoundException(mainEditorRequest.getId());
-
         }
         else throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
@@ -86,12 +84,11 @@ public class MainEditorServiceImpl implements MainEditorService {
     public ResponseEntity<HttpStatus> assignSubscriber(MainEditorRequest mainEditorRequest) {
 
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
-            boolean result = userService.findPublisherEditors().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId())) ||
-                    userService.findNonSubscriberUsers().stream().anyMatch(user -> user.getId().equals(mainEditorRequest.getId()));
+            boolean result = userService.findPublisherEditors().stream().anyMatch(userId -> userId.equals(mainEditorRequest.getId())) ||
+                    userService.findNonSubscriberUsers().stream().anyMatch(userId -> userId.equals(mainEditorRequest.getId()));
 
             if (result) {
                 userService.assignToSubscriber(mainEditorRequest.getId());
-                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else throw new UserNotFoundException(mainEditorRequest.getId());
@@ -128,7 +125,7 @@ public class MainEditorServiceImpl implements MainEditorService {
     public ResponseEntity<HttpStatus> deleteSubscriber(MainEditorRequest mainEditorRequest) {
 
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
-            if(userService.findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(mainEditorRequest.getId()))){
+            if(userService.findSubscriberUsers().stream().anyMatch(subscriberId -> subscriberId.equals(mainEditorRequest.getId()))){
                 userService.delete(mainEditorRequest.getId());
                 log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -140,7 +137,7 @@ public class MainEditorServiceImpl implements MainEditorService {
     public ResponseEntity<HttpStatus> deletePublisherEditor(MainEditorRequest mainEditorRequest) {
 
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
-            if(userService.findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(mainEditorRequest.getId()))){
+            if(userService.findPublisherEditors().stream().anyMatch(publisherEditorId -> publisherEditorId.equals(mainEditorRequest.getId()))){
                 contentService.deleteAllByPublisherEditorId(mainEditorRequest.getId());
                 userService.delete(mainEditorRequest.getId());
                 log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.deleted", mainEditorRequest.getId(),HttpStatus.OK.value()));
@@ -162,6 +159,6 @@ public class MainEditorServiceImpl implements MainEditorService {
 
 
     private boolean verifyMainEditor(Long mainEditorId){
-        return userService.findMainEditors().stream().anyMatch(mainEditor -> mainEditor.getId().equals(mainEditorId));
+        return userService.findMainEditors().stream().anyMatch(id -> id.equals(mainEditorId));
     }
 }

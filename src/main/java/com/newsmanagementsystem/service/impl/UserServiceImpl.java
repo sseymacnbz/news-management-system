@@ -6,6 +6,7 @@ import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
 import com.newsmanagementsystem.mapper.UserMapper;
 import com.newsmanagementsystem.model.PublisherEditor;
+import com.newsmanagementsystem.model.Subscriber;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.repository.UserRepository;
 import com.newsmanagementsystem.service.NewsService;
@@ -64,9 +65,10 @@ public class UserServiceImpl implements UserService {
         try{
             Optional<User> userOptional = userRepository.findById(userId);
             if(userOptional.isEmpty()) throw new UserNotFoundException(userId);
-            User user = userOptional.get();
-            user.setUserType("publisher_editor");
-            userRepository.save(user);
+            PublisherEditor publisherEditor = UserMapper.INSTANCE.convertToPublisherEditor(userOptional.get());
+            userRepository.save(publisherEditor);
+            log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", userId,HttpStatus.OK.value()));
+            delete(userId);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,9 +81,12 @@ public class UserServiceImpl implements UserService {
         try{
             Optional<User> userOptional = userRepository.findById(userId);
             if(userOptional.isEmpty()) throw new UserNotFoundException(userId);
-            User user = userOptional.get();
-            user.setUserType("subscriber");
-            userRepository.save(user);
+            /*Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(userOptional.get());
+            userRepository.save(subscriber);*/
+            System.out.println();
+            //userRepository.assignToSubscriber(userId);
+            log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", userId,HttpStatus.OK.value()));
+            delete(userId);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -89,23 +94,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findMainEditors() {
-
+    public List<Long> findMainEditors() {
         return userRepository.findMainEditors();
     }
 
     @Override
-    public List<User> findPublisherEditors() {
+    public List<Long> findPublisherEditors() {
         return userRepository.findPublisherEditors();
     }
 
     @Override
-    public List<User> findSubscriberUsers() {
+    public List<Long> findSubscriberUsers() {
         return userRepository.findSubscriberUsers();
     }
 
     @Override
-    public List<User> findNonSubscriberUsers() {
+    public List<Long> findNonSubscriberUsers() {
         return userRepository.findNonSubscriberUsers();
     }
 

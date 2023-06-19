@@ -18,10 +18,10 @@ public interface UserService{
      ResponseEntity<Page<DisplayNewsResponse>> displayNews(Pageable pageable);
      ResponseEntity<HttpStatus> assignToPublisherEditor(Long userId);
      ResponseEntity<HttpStatus> assignToSubscriber(Long userId);
-     List<User> findMainEditors();
-     List<User> findPublisherEditors();
-     List<User> findSubscriberUsers();
-     List<User> findNonSubscriberUsers();
+     List<Long> findMainEditors();
+     List<Long> findPublisherEditors();
+     List<Long> findSubscriberUsers();
+     List<Long> findNonSubscriberUsers();
      ResponseEntity<HttpStatus> delete(Long userId);
 
 }

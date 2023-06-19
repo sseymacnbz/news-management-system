@@ -22,7 +22,7 @@ public class SubscriberServiceImpl implements SubscriberService {
     @Override
     public ResponseEntity<Page<DisplayNewsResponse>> displayNews(Long userId, Pageable pageable) {
 
-        boolean result = userService.findNonSubscriberUsers().stream().anyMatch(user->user.getId().equals(userId));
+        boolean result = userService.findNonSubscriberUsers().stream().anyMatch(id->id.equals(userId));
         if(!result){
             return newsService.displayNewsForSubscriber(pageable,userId);
         }
