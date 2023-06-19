@@ -1,9 +1,6 @@
 package com.newsmanagementsystem.service.impl;
 
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotCreatedException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotFoundException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentsNotFoundException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.*;
 import com.newsmanagementsystem.model.BaseEntity;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.repository.ContentRepository;
@@ -27,16 +24,14 @@ import java.util.List;
 
 @Service
 public class ContentServiceImpl implements ContentService {
-
+    private static final String CONTENT_DISPLAY = "content.display";
     @Autowired
     private ContentRepository contentRepository;
     @Autowired
     private NewsService newsService;
 
+    @Autowired
     private UserService userService;
-    public void setUserService(UserService userService){
-        this.userService = userService;
-    }
 
     private static final Logger log = LoggerFactory.getLogger(ContentServiceImpl.class);
 
@@ -53,7 +48,7 @@ public class ContentServiceImpl implements ContentService {
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());
             List<Content> pageContent = contentList.subList(start, end);
-            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
+            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),CONTENT_DISPLAY,content.getId(),HttpStatus.OK.value())));
             return new ResponseEntity<>(new PageImpl<>(pageContent, pageableResponse, contentList.size()), HttpStatus.OK);
         }else throw new ContentsNotFoundException();
     }
@@ -75,14 +70,14 @@ public class ContentServiceImpl implements ContentService {
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());
             List<Content> pageContent = contentList.subList(start, end);
-            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
+            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),CONTENT_DISPLAY,content.getId(),HttpStatus.OK.value())));
             return new ResponseEntity<>(new PageImpl<>(pageContent, pageableResponse, contentList.size()), HttpStatus.OK);
         } else{
             List<Content> contentList = contentRepository.findAll();
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());
             List<Content> pageContent = contentList.subList(start, end);
-            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.display",content.getId(),HttpStatus.OK.value())));
+            pageContent.stream().forEach(content -> log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),CONTENT_DISPLAY,content.getId(),HttpStatus.OK.value())));
             return new ResponseEntity<>(new PageImpl<>(pageContent, pageableResponse, contentList.size()), HttpStatus.OK);
         }
     }
@@ -101,16 +96,16 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public ResponseEntity<HttpStatus> delete(Long contentId) {
-        if(contentRepository.existsContentById(contentId)){
-            try{
-                newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
-                contentRepository.deleteById(contentId);
-                log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId,HttpStatus.OK.value()));
-                return new ResponseEntity<>(HttpStatus.OK);
-            }catch(Exception e){
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }else throw new ContentNotFoundException(contentId);
+
+        try{
+            newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
+            contentRepository.deleteById(contentId);
+            log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId,HttpStatus.OK.value()));
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch(Exception e){
+            throw new ContentNotFoundException(contentId);
+        }
+
     }
 
     @Override
@@ -123,18 +118,18 @@ public class ContentServiceImpl implements ContentService {
             }catch(Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }else throw new UserNotFoundException(publisherEditorId);
+        }throw new PublisherEditorNotFoundException(publisherEditorId);
     }
 
     @Override
     public ResponseEntity<List<Content>> findAllByPublisherEditorId(Long publisherEditorId) {
         if(userService.findPublisherEditors().stream().anyMatch(publisherEditor->publisherEditor.getId().equals(publisherEditorId))){
             try{
-                return new ResponseEntity<>(contentRepository.findAllByPublisherEditorId(publisherEditorId), HttpStatus.OK);
+                return new ResponseEntity<>(contentRepository.findAllByPublisherEditorId(publisherEditorId).stream().toList(), HttpStatus.OK);
             }catch(Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }else throw new UserNotFoundException(publisherEditorId);
+        }throw new PublisherEditorNotFoundException(publisherEditorId);
     }
 
     @Override

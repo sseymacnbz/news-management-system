@@ -3,11 +3,11 @@ package com.newsmanagementsystem.service.impl;
 
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
 import com.newsmanagementsystem.mapper.UserMapper;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.repository.UserRepository;
-import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.NewsService;
 import com.newsmanagementsystem.service.UserService;
 import com.newsmanagementsystem.utilities.LogUtil;
@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,18 +31,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private NewsService newsService;
 
-    private ContentService contentService;
-    public void setUserService(ContentService contentService){
-        this.contentService = contentService;
-    }
-
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest) {
         User user = UserMapper.INSTANCE.createPublicUserRequest(createUserRequest);
         userRepository.save(user);
-        log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.created",HttpStatus.OK.value()));
+        log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.created",HttpStatus.CREATED.value()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -66,7 +62,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<HttpStatus> assignToPublisherEditor(Long userId) {
 
         try{
-            userRepository.assignToPublisherEditor(userId);
+            Optional<User> userOptional = userRepository.findById(userId);
+            if(userOptional.isEmpty()) throw new UserNotFoundException(userId);
+            User user = userOptional.get();
+            user.setUserType("publisher_editor");
+            userRepository.save(user);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,7 +77,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<HttpStatus> assignToSubscriber(Long userId) {
         try{
-            userRepository.assignToSubscriber(userId);
+            Optional<User> userOptional = userRepository.findById(userId);
+            if(userOptional.isEmpty()) throw new UserNotFoundException(userId);
+            User user = userOptional.get();
+            user.setUserType("subscriber");
+            userRepository.save(user);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -108,8 +112,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<HttpStatus> delete(Long userId) {
         try{
-            newsService.deleteNewsByContents(contentService.findAllByPublisherEditorId(userId).getBody());
-            contentService.deleteAllByPublisherEditorId(userId);
             userRepository.deleteById(userId);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch(Exception e){
