@@ -27,24 +27,22 @@
 10) To see the tables right-click on the news-management-system database and refresh it. Then you can see tables under Schemas
 
 ## Roles
-* subscriber : 
-  * Subscribers are people who are members of the system. Subscriber can;
-    * access free news and paid news
+* subscriber :Subscribers are people who are members of the system. Subscriber can;
+  * access free news and paid news
 * publisher editor : Publisher editors are users who deal with contents. Publisher editor can:
   * create contents
   * view its own contents
-* main editor : 
-  * The main editor is the user who deals with the news. Takes the role of admin in the application. Main editor can;
-    * update a news
-    * assign users to subscriber
-    * assign users to publisher editor
-    * create publisher editor
-    * create news
-    * view whether the contents have been used as news or not.
-    * delete subscriber
-    * delete publisher editor
-    * delete news
-    * delete content
+* main editor :The main editor is the user who deals with the news. Takes the role of admin in the application. Main editor can;
+  * update a news
+  * assign users to subscriber
+  * assign users to publisher editor
+  * create publisher editor
+  * create news
+  * view whether the contents have been used as news or not.
+  * delete subscriber
+  * delete publisher editor
+  * delete news
+  * delete content
 
 ## Application Scenario
 * The main editor will be created automatically when the application is started.

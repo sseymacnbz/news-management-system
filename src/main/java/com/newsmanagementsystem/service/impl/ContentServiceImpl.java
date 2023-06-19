@@ -4,10 +4,8 @@ import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotCreate
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentsNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.UserNotFoundException;
-import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.model.BaseEntity;
 import com.newsmanagementsystem.model.Content;
-import com.newsmanagementsystem.model.News;
 import com.newsmanagementsystem.repository.ContentRepository;
 import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.NewsService;
@@ -26,11 +24,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ContentServiceImpl implements ContentService {
-    
+
     @Autowired
     private ContentRepository contentRepository;
     @Autowired
