@@ -111,7 +111,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ResponseEntity<HttpStatus> deleteAllByPublisherEditorId(Long publisherEditorId) {
 
-        if(userService.findPublisherEditors().stream().anyMatch(id->id.equals(publisherEditorId))){
+        if(userService.findPublisherEditors().stream().anyMatch(publisherEditor->publisherEditor.getId().equals(publisherEditorId))){
             try{
                 contentRepository.findAllByPublisherEditorId(publisherEditorId).stream().forEach(content -> delete(content.getId()));
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -123,7 +123,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public ResponseEntity<List<Content>> findAllByPublisherEditorId(Long publisherEditorId) {
-        if(userService.findPublisherEditors().stream().anyMatch(id->id.equals(publisherEditorId))){
+        if(userService.findPublisherEditors().stream().anyMatch(publisherEditor->publisherEditor.getId().equals(publisherEditorId))){
             try{
                 return new ResponseEntity<>(contentRepository.findAllByPublisherEditorId(publisherEditorId).stream().toList(), HttpStatus.OK);
             }catch(Exception e){

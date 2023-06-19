@@ -12,7 +12,6 @@ import lombok.*;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("non-subscriber")
 @Table(name = "user_")
 public class User extends BaseEntity{
 

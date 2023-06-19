@@ -13,15 +13,15 @@ import java.util.List;
 
 public interface UserService{
 
-     ResponseEntity<HttpStatus> createPublicUser(CreateUserRequest createUserRequest);
+     ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest);
      ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor);
      ResponseEntity<Page<DisplayNewsResponse>> displayNews(Pageable pageable);
      ResponseEntity<HttpStatus> assignToPublisherEditor(Long userId);
      ResponseEntity<HttpStatus> assignToSubscriber(Long userId);
-     List<Long> findMainEditors();
-     List<Long> findPublisherEditors();
-     List<Long> findSubscriberUsers();
-     List<Long> findNonSubscriberUsers();
+     List<User> findMainEditors();
+     List<User> findPublisherEditors();
+     List<User> findSubscriberUsers();
+     boolean existsUserById(Long id);
      ResponseEntity<HttpStatus> delete(Long userId);
 
 }

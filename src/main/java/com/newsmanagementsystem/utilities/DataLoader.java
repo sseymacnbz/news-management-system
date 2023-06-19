@@ -15,7 +15,7 @@ public class DataLoader {
 
     @EventListener(ApplicationReadyEvent.class)
     public void startApp(){
-        if(userRepository.findMainEditors().stream().findAny().isEmpty()){
+        if(userRepository.findByUserType("main_editor").stream().findAny().isEmpty()){
             MainEditor mainEditor = new MainEditor();
             mainEditor.setEmail("admin@gmail");
             mainEditor.setName("admin");

@@ -29,7 +29,7 @@ public class NewsController {
         return userService.displayNews(pageable);
     }
 
-    @GetMapping(value = "/subscriber/news")
+    @GetMapping(value = "/subscriber")
     @PageableAsQueryParam
     public ResponseEntity<Page<DisplayNewsResponse>> subscriberDisplayNews(@RequestParam Long userId, @Parameter(hidden = true) Pageable pageable){
         return subscriberService.displayNews(userId, pageable);

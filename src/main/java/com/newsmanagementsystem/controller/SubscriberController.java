@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping(value = "/user")
-public class UserController {
+@RequestMapping(value = "/subscriber")
+public class SubscriberController {
     @Autowired
     private UserService userService;
 
     @PostMapping(value = "/create")
     public ResponseEntity<HttpStatus> create(CreateUserRequest createUserRequest){
-        return userService.createPublicUser(createUserRequest);
+        return userService.createSubscriber(createUserRequest);
     }
 }

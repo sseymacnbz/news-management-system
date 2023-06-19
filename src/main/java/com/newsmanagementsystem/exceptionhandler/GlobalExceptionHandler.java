@@ -92,4 +92,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put(PATH,request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(UserIsAlreadySubscriberException.class)
+    public ResponseEntity<Object> userIsAlreadySubscriberException(UserIsAlreadySubscriberException ex, WebRequest request){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PublisherEditorHasContentsException.class)
+    public ResponseEntity<Object> publisherEditorHasContentsException(PublisherEditorHasContentsException ex, WebRequest request){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(TIMESTAMP, LocalDateTime.now());
+        body.put(MESSAGE,ex.getMessage());
+        body.put(PATH,request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 }

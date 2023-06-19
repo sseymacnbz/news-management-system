@@ -10,7 +10,8 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-    User createPublicUserRequest(CreateUserRequest createPublicUserRequest);
+
+    Subscriber convertToSubscriber(CreateUserRequest createPublicUserRequest);
 
     Subscriber convertToSubscriber(User user);
 

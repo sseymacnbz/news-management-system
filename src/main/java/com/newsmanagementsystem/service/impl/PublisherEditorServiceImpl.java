@@ -39,7 +39,7 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
     @Override
     public ResponseEntity<HttpStatus> createContent(CreateContentRequest createContentRequest) {
 
-        boolean result = userService.findPublisherEditors().stream().anyMatch(publisherEditorId-> publisherEditorId.equals(createContentRequest.getPublisherEditorId()));
+        boolean result = userService.findPublisherEditors().stream().anyMatch(publisherEditor-> publisherEditor.getId().equals(createContentRequest.getPublisherEditorId()));
 
         if(result){
             Content content = ContentMapper.INSTANCE.createContentRequestToContent(createContentRequest);
@@ -62,7 +62,7 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
 
     @Override
     public ResponseEntity<Page<DisplayContentsResponse>> displayContents(Pageable pageable, Long publisherEditorId) {
-        boolean result = userService.findPublisherEditors().stream().anyMatch(userId->userId.equals(publisherEditorId));
+        boolean result = userService.findPublisherEditors().stream().anyMatch(user->user.getId().equals(publisherEditorId));
         if(result){
             Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), pageable.getSort());
             List<Content> publisherEditorsContent = contentService.findAllByPublisherEditorId(publisherEditorId).getBody();
