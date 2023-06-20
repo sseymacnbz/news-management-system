@@ -3,6 +3,7 @@ package com.newsmanagementsystem.service;
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.model.PublisherEditor;
+import com.newsmanagementsystem.model.Subscriber;
 import com.newsmanagementsystem.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +17,13 @@ public interface UserService{
      ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest);
      ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor);
      ResponseEntity<Page<DisplayNewsResponse>> displayNews(Pageable pageable);
-     ResponseEntity<HttpStatus> assignToPublisherEditor(Long userId);
-     ResponseEntity<HttpStatus> assignToSubscriber(Long userId);
+     ResponseEntity<PublisherEditor> assignToPublisherEditor(Long userId);
+     ResponseEntity<Subscriber> assignToSubscriber(Long userId);
      List<User> findMainEditors();
      List<User> findPublisherEditors();
      List<User> findSubscriberUsers();
      boolean existsUserById(Long id);
      ResponseEntity<HttpStatus> delete(Long userId);
+     ResponseEntity<User> getUser(Long userId);
 
 }

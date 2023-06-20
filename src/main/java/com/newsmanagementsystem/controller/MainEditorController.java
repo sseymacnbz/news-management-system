@@ -5,6 +5,7 @@ import com.newsmanagementsystem.dto.requests.MainEditorRequest;
 import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
 import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
 import com.newsmanagementsystem.model.Content;
+import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.service.MainEditorService;
 import com.newsmanagementsystem.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,6 +30,10 @@ public class MainEditorController{
     @PageableAsQueryParam
     public ResponseEntity<Page<Content>> getNewsContent(@RequestParam boolean contentWithNews, @Parameter(hidden = true) Pageable pageable){
         return new ResponseEntity<>(mainEditorService.getNewsContent(contentWithNews,pageable).getBody(), HttpStatus.OK);
+    }
+    @PostMapping("/getUser")
+    public ResponseEntity<User> getUser(@RequestBody MainEditorRequest mainEditorRequest){
+        return new ResponseEntity<>(mainEditorService.getUser(mainEditorRequest).getBody(), HttpStatus.OK);
     }
 
     @PostMapping("/createNews")

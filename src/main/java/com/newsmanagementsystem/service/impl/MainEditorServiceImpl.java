@@ -8,6 +8,7 @@ import com.newsmanagementsystem.exceptionhandler.exceptiontypes.*;
 import com.newsmanagementsystem.mapper.NewsMapper;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
+import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.service.*;
 import com.newsmanagementsystem.utilities.LogUtil;
 import org.slf4j.Logger;
@@ -39,6 +40,16 @@ public class MainEditorServiceImpl implements MainEditorService {
         if(contentWithNews){
             return new ResponseEntity<>(contentService.getContentsThatIsNews(pageable).getBody(),HttpStatus.OK);
         }else return new ResponseEntity<>(contentService.getContentsThatIsNotNews(pageable).getBody(),HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<User> getUser(MainEditorRequest mainEditorRequest) {
+        if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
+            if(userService.existsUserById(mainEditorRequest.getId())){
+                return userService.getUser(mainEditorRequest.getId());
+            }throw new UserNotFoundException(mainEditorRequest.getId());
+        }
+        throw new MainEditorNotFoundException(mainEditorRequest.getMainEditorId());
     }
 
     @Override
