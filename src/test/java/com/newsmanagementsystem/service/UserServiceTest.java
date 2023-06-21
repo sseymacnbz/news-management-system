@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -64,16 +66,19 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("displayNews test")
-    void get_shouldDisplayNews(){
-        ResponseEntity<Page<DisplayNewsResponse>> expected = new ResponseEntity<>(HttpStatus.OK);
-        Pageable pageableResponse = PageRequest.of(0,2);
+    void display_shouldDisplayNews(){
+        List<DisplayNewsResponse> displayNewsResponseList = new ArrayList<>();
+        Pageable pageableResponse = PageRequest.of(0, 2);
+        ResponseEntity<Page<DisplayNewsResponse>> expected =
+                new ResponseEntity<>(new PageImpl<>(displayNewsResponseList,pageableResponse,5),HttpStatus.OK);
 
         doReturn(expected).when(userService).displayNews(pageableResponse);
 
         ResponseEntity<Page<DisplayNewsResponse>> actual = userService.displayNews(pageableResponse);
         assertAll(
-                () -> assertNotNull(actual),
-                () -> assertEquals(expected, actual)
+                () -> assertEquals(expected,actual),
+                () -> assertEquals(3,actual.getBody().getTotalPages()),
+                () -> assertEquals(5, actual.getBody().getTotalElements())
         );
     }
 
@@ -140,8 +145,71 @@ public class UserServiceTest {
 
         assertAll(
                 () -> assertEquals(expected,actual),
-                () -> assertEquals("publisher_editor", actual.get(0).getUserType())
+                () -> assertEquals(PublisherEditor.class, actual.get(0).getClass())
+        );
+    }
+
+    @Test
+    @DisplayName("findSubscribers test")
+    void find_shouldFindSubscribers(){
+        List<User> expected = new ArrayList<>();
+        expected.add(new Subscriber());
+
+        doReturn(expected).when(userService).findSubscriberUsers();
+
+        List<User> actual = userService.findSubscriberUsers();
+
+        assertAll(
+                () -> assertEquals(expected,actual),
+                () -> assertEquals(Subscriber.class, actual.get(0).getClass())
+        );
+    }
+
+    @Test
+    @DisplayName("existsUserById test")
+    void find_shouldFindExistenceOfUser(){
+        boolean expected = true;
+        doReturn(expected).when(userService).existsUserById(10L);
+
+        boolean actual = userService.existsUserById(10L);
+
+        assertAll(
+                () -> assertEquals(expected,actual)
         );
 
     }
+
+    @Test
+    @DisplayName("delete test")
+    void delete_shouldDeleteUser(){
+        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
+        doReturn(expected).when(userService).delete(10L);
+
+        ResponseEntity<HttpStatus> actual = userService.delete(10L);
+
+        assertAll(
+                () -> assertEquals(expected, actual),
+                () -> assertNotEquals(true, userService.existsUserById(10L))
+        );
+    }
+
+    @Test
+    @DisplayName("getUser test")
+    void get_shouldGetUser(){
+        User user = new User();
+        user.setId(10L);
+        user.setUserType("publisher_editor");
+        ResponseEntity<User> expected = new ResponseEntity<>(user,HttpStatus.OK);
+        doReturn(expected).when(userService).getUser(10L);
+
+        ResponseEntity<User> actual = userService.getUser(10L);
+
+        assertAll(
+                () -> assertEquals(expected, actual),
+                () -> assertEquals("publisher_editor",actual.getBody().getUserType())
+        );
+
+    }
+
+
 }
