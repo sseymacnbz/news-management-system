@@ -1,6 +1,5 @@
 package com.newsmanagementsystem.service;
 
-import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.Subscriber;
@@ -14,7 +13,7 @@ import java.util.List;
 
 public interface UserService{
 
-     ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest);
+     ResponseEntity<HttpStatus> createSubscriber(Subscriber subscriber);
      ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor);
      ResponseEntity<Page<DisplayNewsResponse>> displayNews(Pageable pageable);
      ResponseEntity<PublisherEditor> assignToPublisherEditor(Long userId);

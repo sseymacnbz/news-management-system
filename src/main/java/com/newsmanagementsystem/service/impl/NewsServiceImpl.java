@@ -110,9 +110,9 @@ public class NewsServiceImpl implements NewsService {
     public ResponseEntity<HttpStatus> deleteNewsByContents(List<Content> contentList) {
 
         try{
-            contentList.stream().forEach(content -> {
-                newsRepository.findByContentId(content.getId()).stream().forEach(news -> delete(news.getId()));
-            });
+            contentList.stream().forEach(content ->
+                newsRepository.findByContentId(content.getId()).stream().forEach(news -> delete(news.getId()))
+            );
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

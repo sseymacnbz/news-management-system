@@ -44,7 +44,7 @@ public class PublisherEditorServiceImpl implements PublisherEditorService {
         if(result){
             Content content = ContentMapper.INSTANCE.createContentRequestToContent(createContentRequest);
             contentService.save(content);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }throw new PublisherEditorNotFoundException(createContentRequest.getPublisherEditorId());
     }
 

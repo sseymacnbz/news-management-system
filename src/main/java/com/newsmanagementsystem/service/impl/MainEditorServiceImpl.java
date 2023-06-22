@@ -1,13 +1,12 @@
 package com.newsmanagementsystem.service.impl;
 
-import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
-import com.newsmanagementsystem.dto.requests.MainEditorRequest;
-import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
-import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
+import com.newsmanagementsystem.dto.requests.*;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.*;
 import com.newsmanagementsystem.mapper.NewsMapper;
+import com.newsmanagementsystem.mapper.UserMapper;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
+import com.newsmanagementsystem.model.Subscriber;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.service.*;
 import com.newsmanagementsystem.utilities.LogUtil;
@@ -69,6 +68,16 @@ public class MainEditorServiceImpl implements MainEditorService {
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         else throw new MainEditorNotFoundException(createPublisherEditorRequest.getMainEditorId());
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest) {
+        if(verifyMainEditor(createUserRequest.getMainEditorId())){
+            Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(createUserRequest);
+            userService.createSubscriber(subscriber);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        throw new MainEditorNotFoundException(createUserRequest.getMainEditorId());
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.newsmanagementsystem.controller;
 
-import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
-import com.newsmanagementsystem.dto.requests.MainEditorRequest;
-import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
-import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
+import com.newsmanagementsystem.dto.requests.*;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.service.MainEditorService;
@@ -44,6 +41,11 @@ public class MainEditorController{
     @PostMapping("/createPublisherEditor")
     public ResponseEntity<HttpStatus> createPublisherEditor(@RequestBody CreatePublisherEditorRequest createPublisherEditorRequest){
         return mainEditorService.createPublisherEditor(createPublisherEditorRequest);
+    }
+
+    @PostMapping(value = "/createSubscriber")
+    public ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest){
+        return mainEditorService.createSubscriber(createUserRequest);
     }
 
     @PutMapping("/assignPublisherEditor")

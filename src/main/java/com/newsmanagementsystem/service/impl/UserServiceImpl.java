@@ -1,7 +1,6 @@
 package com.newsmanagementsystem.service.impl;
 
 
-import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorHasContentsException;
 import com.newsmanagementsystem.mapper.UserMapper;
@@ -41,10 +40,9 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest) {
+    public ResponseEntity<HttpStatus> createSubscriber(Subscriber subscriber) {
         try{
-            Subscriber user = UserMapper.INSTANCE.convertToSubscriber(createUserRequest);
-            userRepository.save(user);
+            userRepository.save(subscriber);
             log.info(LogUtil.getMessage(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.created",HttpStatus.CREATED.value()));
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch (Exception e){
@@ -72,18 +70,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<PublisherEditor> assignToPublisherEditor(Long userId) {
-
-        try{
-            Optional<User> userOptional = userRepository.findById(userId);
-            PublisherEditor publisherEditor = UserMapper.INSTANCE.convertToPublisherEditor(userOptional.get());
-            userRepository.save(publisherEditor);
-            log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", userId,HttpStatus.OK.value()));
+        Optional<User> userOptional = userRepository.findById(userId);
+        PublisherEditor publisherEditor = UserMapper.INSTANCE.convertToPublisherEditor(userOptional.orElse(null));
+        userRepository.save(publisherEditor);
+        log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"publisher.assign", userId,HttpStatus.OK.value()));
+        if(userOptional.isPresent()) {
             userRepository.deleteById(userOptional.get().getId());
-            return new ResponseEntity<>(publisherEditor,HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(publisherEditor, HttpStatus.OK);
         }
-
+        else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -92,11 +87,14 @@ public class UserServiceImpl implements UserService {
             Optional<User> userOptional = userRepository.findById(userId);
             List<Content> contentList= contentService.findAllByPublisherEditorId(userId).getBody();
             if(contentList == null || !contentList.isEmpty()) throw new PublisherEditorHasContentsException();
-            Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(userOptional.get());
+            Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(userOptional.orElse(null));
             userRepository.save(subscriber);
             log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", userId,HttpStatus.OK.value()));
-            userRepository.deleteById(userOptional.get().getId());
-            return new ResponseEntity<>(subscriber,HttpStatus.OK);
+            if(userOptional.isPresent()){
+                userRepository.deleteById(userOptional.get().getId());
+                return new ResponseEntity<>(subscriber,HttpStatus.OK);
+            }
+            else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }catch(Exception e){
             throw e;
         }
@@ -134,7 +132,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<User> getUser(Long userId) {
         try{
             log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"user.display", userId,HttpStatus.OK.value()));
-            return new ResponseEntity<>(userRepository.findById(userId).get(), HttpStatus.OK);
+            return new ResponseEntity<>(userRepository.findById(userId).orElse(null), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

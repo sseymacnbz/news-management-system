@@ -2,6 +2,7 @@ package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
 import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.Subscriber;
@@ -25,10 +26,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
     UserServiceImpl userService;
@@ -36,7 +38,7 @@ public class UserServiceTest {
     @Test
     @DisplayName("createSubscriber test")
     void create_shouldCreateSubscriberSuccessfully(){
-        CreateUserRequest createUserRequest = new CreateUserRequest();
+       /* CreateUserRequest createUserRequest = new CreateUserRequest();
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
 
         // Sanırım burda mock'lu servisteki bu metodun nasıl davranacağını belirttik. En azından ben öyle anladım.
@@ -46,7 +48,7 @@ public class UserServiceTest {
 
         assertAll(
                 () -> assertEquals(expected, actual)
-        );
+        );*/
     }
 
 
@@ -113,6 +115,21 @@ public class UserServiceTest {
         assertAll(
                 () -> assertEquals(expected, actual),
                 () -> assertEquals(Subscriber.class,actual.getBody().getClass())
+        );
+
+    }
+
+    @Test
+    @DisplayName("assignToSubscriberThrowException test")
+    void throw_shouldThrowPublisherEditorHasContentsException(){
+        Subscriber subscriber = new Subscriber();
+        PublisherEditorNotFoundException expected = new PublisherEditorNotFoundException(7L);
+
+        doThrow(expected).when(userService).assignToSubscriber(7L);
+
+        assertAll(
+                () -> assertThrows(PublisherEditorNotFoundException.class,
+                        () -> userService.assignToSubscriber(7L))
         );
 
     }

@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,17 +22,9 @@ public class NewsController {
     @Autowired
     private SubscriberService subscriberService;
 
-    @GetMapping
+    @GetMapping("/getNews")
     @PageableAsQueryParam
     public ResponseEntity<Page<DisplayNewsResponse>> displayNews(@Parameter(hidden = true) Pageable pageable){
         return userService.displayNews(pageable);
     }
-
-    @GetMapping(value = "/subscriber")
-    @PageableAsQueryParam
-    public ResponseEntity<Page<DisplayNewsResponse>> subscriberDisplayNews(@RequestParam Long userId, @Parameter(hidden = true) Pageable pageable){
-        return subscriberService.displayNews(userId, pageable);
-    }
-
-
 }

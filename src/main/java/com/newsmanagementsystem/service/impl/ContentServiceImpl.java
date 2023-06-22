@@ -40,9 +40,9 @@ public class ContentServiceImpl implements ContentService {
         List<Long> newsContentList = newsService.newsContents().getBody();
         if(newsContentList!=null){
             List<Content> contentList = new ArrayList<>();
-            newsContentList.stream().forEach(id->{
-                contentList.add(contentRepository.findById(id).get());
-            });
+            newsContentList.stream().forEach(id->
+                contentList.add(contentRepository.findById(id).get())
+            );
 
             Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
             int start = (int) pageableResponse.getOffset();
@@ -63,9 +63,9 @@ public class ContentServiceImpl implements ContentService {
 
         if(newsContentList != null){
             List<Content> contentList = new ArrayList<>();
-            contentsThatIsNotNews.stream().forEach(id->{
-                contentList.add(contentRepository.findById(id).get());
-            });
+            contentsThatIsNotNews.stream().forEach(id->
+                contentList.add(contentRepository.findById(id).get())
+            );
 
             int start = (int) pageableResponse.getOffset();
             int end = Math.min((start + pageableResponse.getPageSize()), contentList.size());

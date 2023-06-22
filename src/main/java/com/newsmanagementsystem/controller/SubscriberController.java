@@ -1,9 +1,12 @@
 package com.newsmanagementsystem.controller;
 
-import com.newsmanagementsystem.dto.requests.CreateUserRequest;
-import com.newsmanagementsystem.service.UserService;
+import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
+import com.newsmanagementsystem.service.SubscriberService;
+import io.swagger.v3.oas.annotations.Parameter;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,11 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/subscriber")
 public class SubscriberController {
-    @Autowired
-    private UserService userService;
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<HttpStatus> create(CreateUserRequest createUserRequest){
-        return userService.createSubscriber(createUserRequest);
+    @Autowired
+    private SubscriberService subscriberService;
+
+    @GetMapping(value = "/getNews")
+    @PageableAsQueryParam
+    public ResponseEntity<Page<DisplayNewsResponse>> subscriberDisplayNews(@RequestParam Long userId, @Parameter(hidden = true) Pageable pageable){
+        return subscriberService.displayNews(userId, pageable);
     }
 }

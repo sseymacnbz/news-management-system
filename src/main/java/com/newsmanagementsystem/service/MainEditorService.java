@@ -1,9 +1,6 @@
 package com.newsmanagementsystem.service;
 
-import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
-import com.newsmanagementsystem.dto.requests.MainEditorRequest;
-import com.newsmanagementsystem.dto.requests.CreateNewsRequest;
-import com.newsmanagementsystem.dto.requests.UpdateNewsRequest;
+import com.newsmanagementsystem.dto.requests.*;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.User;
 import org.springframework.data.domain.Page;
@@ -16,6 +13,7 @@ public interface MainEditorService {
     ResponseEntity<User> getUser(MainEditorRequest mainEditorRequest);
     ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest);
     ResponseEntity<HttpStatus> createPublisherEditor(CreatePublisherEditorRequest createPublisherEditorRequest);
+    ResponseEntity<HttpStatus> createSubscriber(CreateUserRequest createUserRequest);
     ResponseEntity<HttpStatus> assignPublisherEditor(MainEditorRequest mainEditorRequest);
     ResponseEntity<HttpStatus> assignSubscriber(MainEditorRequest mainEditorRequest);
     ResponseEntity<HttpStatus> updateNews(UpdateNewsRequest updateNewsRequest);
