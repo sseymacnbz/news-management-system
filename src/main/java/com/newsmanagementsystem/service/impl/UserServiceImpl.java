@@ -119,6 +119,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsPublisherEditorById(Long id){
+        return findPublisherEditors().stream().anyMatch(publisherEditor -> publisherEditor.getId().equals(id));
+    }
+    @Override
+    public boolean existsSubscriberById(Long id){
+        return findSubscriberUsers().stream().anyMatch(subscriber -> subscriber.getId().equals(id));
+    }
+
+    @Override
     public ResponseEntity<HttpStatus> delete(Long userId) {
         try{
             userRepository.deleteById(userId);
