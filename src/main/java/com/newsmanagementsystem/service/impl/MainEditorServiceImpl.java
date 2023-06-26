@@ -173,7 +173,7 @@ public class MainEditorServiceImpl implements MainEditorService {
     }
 
 
-    private boolean verifyMainEditor(Long mainEditorId){
+    public boolean verifyMainEditor(Long mainEditorId){
         return userService.findMainEditors().stream().anyMatch(user -> user.getId().equals(mainEditorId));
     }
 }
