@@ -22,6 +22,8 @@ public interface UserService{
      List<User> findPublisherEditors();
      List<User> findSubscriberUsers();
      boolean existsUserById(Long id);
+     boolean existsPublisherEditorById(Long id);
+     boolean existsSubscriberById(Long id);
      ResponseEntity<HttpStatus> delete(Long userId);
      ResponseEntity<User> getUser(Long userId);
 
