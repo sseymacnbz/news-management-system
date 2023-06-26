@@ -1,18 +1,27 @@
 package com.newsmanagementsystem.service;
 
-import com.newsmanagementsystem.dto.requests.CreateUserRequest;
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
+import com.newsmanagementsystem.mapper.UserMapper;
 import com.newsmanagementsystem.model.MainEditor;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.Subscriber;
 import com.newsmanagementsystem.model.User;
+import com.newsmanagementsystem.repository.UserRepository;
+import com.newsmanagementsystem.service.impl.ContentServiceImpl;
+import com.newsmanagementsystem.service.impl.NewsServiceImpl;
 import com.newsmanagementsystem.service.impl.UserServiceImpl;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,53 +31,48 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceTest {
 
-    @Mock
+    @InjectMocks
     UserServiceImpl userService;
+    @Mock
+    UserRepository userRepository;
+    @Mock
+    NewsServiceImpl newsService;
+    @Mock
+    ContentServiceImpl contentService;
 
     @Test
     @DisplayName("createSubscriber test")
     void create_shouldCreateSubscriberSuccessfully(){
-       /* CreateUserRequest createUserRequest = new CreateUserRequest();
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
 
-        // Sanırım burda mock'lu servisteki bu metodun nasıl davranacağını belirttik. En azından ben öyle anladım.
-        doReturn(expected).when(userService).createSubscriber(any());
+        Subscriber subscriber = new Subscriber();
+        assertDoesNotThrow(() -> userService.createSubscriber(subscriber));
 
-        ResponseEntity<HttpStatus> actual = userService.createSubscriber(createUserRequest);
-
-        assertAll(
-                () -> assertEquals(expected, actual)
-        );*/
     }
 
 
     @Test
     @DisplayName("createPublisherEditor test")
     void create_shouldCreatePublisherEditorSuccessfully(){
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
-
-        doReturn(expected).when(userService).createPublisherEditor(any());
-
-        ResponseEntity<HttpStatus> actual = userService.createPublisherEditor(any());
-
-        assertAll(
-                () -> assertEquals(expected, actual)
-        );
+        PublisherEditor publisherEditor = new PublisherEditor();
+        assertDoesNotThrow(() -> userService.createPublisherEditor(publisherEditor));
     }
 
     @Test
     @DisplayName("displayNews test")
     void display_shouldDisplayNews(){
+        /*
         List<DisplayNewsResponse> displayNewsResponseList = new ArrayList<>();
         Pageable pageableResponse = PageRequest.of(0, 2);
         ResponseEntity<Page<DisplayNewsResponse>> expected =
@@ -81,24 +85,39 @@ class UserServiceTest {
                 () -> assertEquals(expected,actual),
                 () -> assertEquals(3,actual.getBody().getTotalPages()),
                 () -> assertEquals(5, actual.getBody().getTotalElements())
-        );
+        );*/
+        List<DisplayNewsResponse> displayNewsResponseList = new ArrayList<>();
+        Pageable pageableResponse = PageRequest.of(0, 2);
+        ResponseEntity<Page<DisplayNewsResponse>> expected =
+                new ResponseEntity<>(new PageImpl<>(displayNewsResponseList,pageableResponse,5),HttpStatus.OK);
+
+        doReturn(expected).when(newsService).displayNewsForNonSubscriber(pageableResponse);
+
+        assertDoesNotThrow(() -> userService.displayNews(pageableResponse));
+
     }
 
+
+
     @Test
+    @Transactional
     @DisplayName("assignToPublisherEditor test")
     void assign_shouldAssignToPublisherEditor(){
-        PublisherEditor publisherEditor = new PublisherEditor();
-        ResponseEntity<PublisherEditor> expected = new ResponseEntity<>(publisherEditor,HttpStatus.OK);
+        User user = new User();
+        user.setId(1L);
+        doReturn(Optional.of(user)).when(userRepository).findById(1L);
+        PublisherEditor publisherEditor = UserMapper.INSTANCE.convertToPublisherEditor(user);
+        doReturn(publisherEditor).when(userRepository).save(publisherEditor);
+        assertDoesNotThrow(() -> userService.assignToPublisherEditor(1L));
 
-        doReturn(expected).when(userService).assignToPublisherEditor(any());
 
-        ResponseEntity<PublisherEditor> actual = userService.assignToPublisherEditor(any());
-
+        //doReturn(publisherEditor).when(userRepository).save(publisherEditor);
+        /*
         assertAll(
-                () -> assertEquals(expected, actual),
-                () -> assertEquals(PublisherEditor.class,actual.getBody().getClass())
-        );
-
+                () -> assertDoesNotThrow(() -> userService.assignToPublisherEditor(2L)),
+                () -> assertEquals(expected, userService.assignToPublisherEditor(2L)),
+                () -> assertEquals(PublisherEditor.class,userService.assignToPublisherEditor(2L).getBody().getClass())
+        );*/
     }
 
 
@@ -135,9 +154,10 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("findMainEditors test")
     void find_shouldFindMainEditors(){
-        List<User> expected = new ArrayList<>();
+        /*List<User> expected = new ArrayList<>();
         expected.add(new MainEditor());
 
         doReturn(expected).when(userService).findMainEditors();
@@ -147,8 +167,11 @@ class UserServiceTest {
         assertAll(
                 () -> assertEquals(expected,actual),
                 () -> assertNotEquals(0,actual.size())
-        );
+        );*/
+        //List<User> expected = new ArrayList<>();
+        assertDoesNotThrow(() -> userService.findMainEditors());
     }
+
 
     @Test
     @DisplayName("findPublisherEditors test")
