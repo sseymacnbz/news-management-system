@@ -2,7 +2,7 @@
 ## Info About Project
 * The news management system is a management application where the news is shown to normal users and
   subscribers, news content entries are made by the publisher editors, and the main editor makes
-  arrangements about news, contents and users. <br /> ![img_swagger.PNG](img%2Fimg_swagger.PNG)
+  arrangements about news, contents and users. <br />  ![img_swagger.PNG](img%2Fimg_swagger.PNG)
 ![db_diagram.PNG](img%2Fdb_diagram.PNG)
 
 ## Used Technologies
