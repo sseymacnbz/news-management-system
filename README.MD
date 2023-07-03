@@ -129,15 +129,13 @@
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Deletes a content along with the news that is linked to the content.
-<br/>
-<br/>
+
 ### News Controller
 * getNews
   * param **_pageable : Pageable_**
   * return **_DisplayNewsResponse : Page_**
     <br /><br /> Returns news for normal users.
-<br/>
-<br/>
+
 ### Publisher Editor Controller
 * getContents
   * param **_pageable : Pageable_**
@@ -149,8 +147,7 @@
   * param **_createContentRequest : CreateContentRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Enables the creation of content.
-<br/>
-<br/>
+
 ### Subscriber Controller
 * getNews
   * param **_userId : Long_**
