@@ -74,83 +74,80 @@
   * param **_pageable : Pageable_**
   * return **_Page List : ResponseEntity_**
     <br /><br /> It brings content that is used or not used as news according to its true or false status.
----
+
 * getUser
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_User : ResponseEntity_**
   <br /><br /> Returns the user's information in the database.
----
+
 * createNews
   * param **_createNewsRequest : CreateNewsRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Enables the creation of news.
----
+
 * createPublisherEditor
   * param **_createPublisherEditorRequest : CreatePublisherEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Enables the creation of the publisher editor.
----
+
 * createSubscriber
   * param **_createUserRequest : CreateUserRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Enables the creation of the subscriber.
----
+
 * assignPublisherEditor
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Assigns the subscriber as publisher editor.
----
+
 * assignSubscriber
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Assigns the publisher editor as subscriber.
----
+
 * updateNews
   * param **_updateNewsRequest : UpdateNewsRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Updates an existing news.
----
+
 * deleteNews
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Deletes an existing news.
----
+
 * deleteSubscriber
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Deletes an existing subscriber.
----
+
 * deletePublisherEditor
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Deletes an existing publisher editor with its contents.
----
+
 * deleteContent
   * param **_mainEditorRequest : MainEditorRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Deletes a content along with the news that is linked to the content.
-
-
+---
 ### News Controller
 * getNews
   * param **_pageable : Pageable_**
   * return **_DisplayNewsResponse : Page_**
     <br /><br /> Returns news for normal users.
-
-
+---
 ### Publisher Editor Controller
 * getContents
   * param **_pageable : Pageable_**
   * param **_publisherEditorId : Long_**
   * return **_DisplayContentsResponse : Page_**
     <br /><br /> Returns the contents of PublisherEditor.
----
+
 * createContent
   * param **_createContentRequest : CreateContentRequest_**
   * return **_HttpStatus : ResponseEntity_**
     <br /><br /> Enables the creation of content.
-
-
+---
 ### Subscriber Controller
 * getNews
   * param **_userId : Long_**
