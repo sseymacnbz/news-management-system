@@ -54,11 +54,14 @@ public class MainEditorServiceImpl implements MainEditorService {
     @Override
     public ResponseEntity<HttpStatus> createNews(CreateNewsRequest createNewsRequest){
         if(verifyMainEditor(createNewsRequest.getMainEditorId())){
-            News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
-            newsService.save(news);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            if(contentService.isContentExist(createNewsRequest.getContentId())){
+                News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
+                newsService.save(news);
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
+            throw new ContentNotFoundException(createNewsRequest.getContentId());
         }
-        else throw new MainEditorNotFoundException(createNewsRequest.getMainEditorId());
+        throw new MainEditorNotFoundException(createNewsRequest.getMainEditorId());
     }
 
     @Override
@@ -113,7 +116,7 @@ public class MainEditorServiceImpl implements MainEditorService {
     @Override
     public ResponseEntity<HttpStatus> updateNews(UpdateNewsRequest updateNewsRequest) {
         if(verifyMainEditor(updateNewsRequest.getMainEditorId())) {
-            if ((newsService.findById(updateNewsRequest.getNewsId()) != null)) {
+            if (newsService.isNewsExist(updateNewsRequest.getNewsId())) {
 
                 News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
                 news.setContent(new Content(newsService.findById(updateNewsRequest.getNewsId()).getContent().getId()));
