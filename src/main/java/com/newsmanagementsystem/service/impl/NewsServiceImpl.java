@@ -48,13 +48,20 @@ public class NewsServiceImpl implements NewsService {
         }
     }
 
+    /**
+     *
+     * @param pageable
+     * @param userId
+     * @return Önce headline olanları date'i güncel olacak şekilde sıralar ve listeye atar. Sonra headline olmayanları date'i güncel olacak şekilde sıralar ve listeye atar
+     *         sonra da bu iki listeyi birleştirip page objesi halinde döner.
+     */
     @Override
     public ResponseEntity<Page<DisplayNewsResponse>> displayNewsForSubscriber(Pageable pageable, Long userId) {
 
         Pageable pageableResponse = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
-        List<News> isHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(true);
-        List<News> isNotHeadlineAndPaid = newsRepository.findAllByIsHeadlineOrderByDateDesc(false);
-        List<News> allNews = Stream.concat(isHeadlineAndPaid.stream(), isNotHeadlineAndPaid.stream()).toList();
+        List<News> isHeadline = newsRepository.findAllByIsHeadlineOrderByDateDesc(true);
+        List<News> isNotHeadline = newsRepository.findAllByIsHeadlineOrderByDateDesc(false);
+        List<News> allNews = Stream.concat(isHeadline.stream(), isNotHeadline.stream()).toList();
 
         int start = (int) pageableResponse.getOffset();
         int end = Math.min((start + pageableResponse.getPageSize()), allNews.size());
