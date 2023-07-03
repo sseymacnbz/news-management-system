@@ -15,7 +15,7 @@
 * Mockito 4.8.1
 
 
-## How Is The Project Ready To Work?
+## How to Get the Project Ready to Work?
 1) Clone the project to Intellij IDEA.
 2) Follow the progress bar at the bottom to understand the project getting ready.
 3) Open the pgAdmin 4 application that comes with PostgreSql.
