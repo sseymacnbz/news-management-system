@@ -48,11 +48,8 @@ class SubscriberServiceTest {
 
         doReturn(true).when(userService).existsUserById(2L);
         doReturn(expected).when(newsService).displayNewsForSubscriber(pageableResponse,2L);
-        doThrow(UnauthorizedAccessException.class).when(userService).existsUserById(100L);
 
-        assertAll(
-                () -> assertThrows(UnauthorizedAccessException.class,() -> subscriberService.displayNews(100L, pageableResponse)),
-                () -> assertDoesNotThrow(() -> subscriberService.displayNews(2L,pageableResponse))
-        );
+        assertDoesNotThrow(() -> subscriberService.displayNews(2L,pageableResponse));
+        assertThrows(UnauthorizedAccessException.class,() -> subscriberService.displayNews(100L, pageableResponse));
     }
 }
