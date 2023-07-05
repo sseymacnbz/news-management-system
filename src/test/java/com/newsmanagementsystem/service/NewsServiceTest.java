@@ -1,6 +1,7 @@
 package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
 import com.newsmanagementsystem.repository.NewsRepository;
@@ -84,7 +85,7 @@ class NewsServiceTest {
     @DisplayName("findById test")
     void find_shouldFindNewsById(){
         News news = new News();
-        news.setId(2L);
+        news.setId(3L);
 
         doReturn(news).when(newsRepository).getReferenceById(3L);
 
@@ -96,16 +97,21 @@ class NewsServiceTest {
     @Rollback
     @DisplayName("delete test")
     void delete_shouldDeleteNews(){
+
         doReturn(true).when(newsService).isNewsExist(2L);
+        assertDoesNotThrow(() -> newsService.isNewsExist(2L));
 
         News news = new News();
         news.setId(2L);
+        doReturn(news).when(newsRepository).getReferenceById(2L);
         doNothing().when(newsRepository).delete(news);
 
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
 
         doReturn(expected).when(newsService).delete(2L);
+
         assertDoesNotThrow(() -> newsService.delete(2L));
+        assertThrows(NewsNotFoundException.class, () -> newsService.delete(3L));
     }
 
     @Test
