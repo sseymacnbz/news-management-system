@@ -67,17 +67,20 @@ public class MainEditorServiceTest {
     @DisplayName("getUser test")
     void get_shouldGetUser(){
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
-        User user = new User();
-        ResponseEntity<User> expected = new ResponseEntity<>(user,HttpStatus.OK);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(userService).existsUserById(2L);
-        doThrow(UserNotFoundException.class).when(userService).existsUserById(100L);
+        assertDoesNotThrow(() -> userService.existsUserById(2L));
 
         assertDoesNotThrow(() -> mainEditorService.getUser(mainEditorRequest));
 
+        MainEditorRequest mainEditorRequest1 = new MainEditorRequest(100L,2L);
+        assertThrows(MainEditorNotFoundException.class,() -> mainEditorService.getUser(mainEditorRequest1));
+
+        MainEditorRequest mainEditorRequest2 = new MainEditorRequest(1L,200L);
+        assertThrows(UserNotFoundException.class, () -> mainEditorService.getUser(mainEditorRequest2));
     }
 
     @Test
@@ -85,16 +88,27 @@ public class MainEditorServiceTest {
     void create_shouldCreateNews(){
         CreateNewsRequest createNewsRequest = new CreateNewsRequest();
         createNewsRequest.setMainEditorId(1L);
-        News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
+        createNewsRequest.setContentId(2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(2L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
+
+        doReturn(true).when(contentService).isContentExist(2L);
+        assertDoesNotThrow(() -> contentService.isContentExist(2L));
+
+        News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
 
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
         doReturn(expected).when(newsService).save(news);
 
         assertDoesNotThrow(() -> mainEditorService.createNews(createNewsRequest));
 
+        createNewsRequest.setMainEditorId(100L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.createNews(createNewsRequest));
+
+        createNewsRequest.setMainEditorId(1L);
+        createNewsRequest.setContentId(200L);
+        assertThrows(ContentNotFoundException.class, () -> mainEditorService.createNews(createNewsRequest));
     }
 
     @Test
@@ -104,12 +118,15 @@ public class MainEditorServiceTest {
         createPublisherEditorRequest.setMainEditorId(1L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
         doReturn(expected).when(publisherEditorService).createPublisherEditor(createPublisherEditorRequest);
 
         assertDoesNotThrow(() -> mainEditorService.createPublisherEditor(createPublisherEditorRequest));
+
+        createPublisherEditorRequest.setMainEditorId(100L);
+        assertThrows(MainEditorNotFoundException.class,() -> mainEditorService.createPublisherEditor(createPublisherEditorRequest));
     }
 
     @Test
@@ -119,13 +136,16 @@ public class MainEditorServiceTest {
         createUserRequest.setMainEditorId(1L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(createUserRequest);
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
         doReturn(expected).when(userService).createSubscriber(subscriber);
 
         assertDoesNotThrow(() -> mainEditorService.createSubscriber(createUserRequest));
+
+        createUserRequest.setMainEditorId(100L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.createSubscriber(createUserRequest));
     }
 
     @Test
@@ -134,12 +154,19 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(userService).existsSubscriberById(2L);
-        doThrow(UserNotFoundException.class).when(userService).existsSubscriberById(3L);
+        assertDoesNotThrow(() -> userService.existsSubscriberById(2L));
 
         assertDoesNotThrow(() -> mainEditorService.assignPublisherEditor(mainEditorRequest));
+
+        mainEditorRequest.setMainEditorId(100L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.assignPublisherEditor(mainEditorRequest));
+
+        mainEditorRequest.setMainEditorId(1L);
+        mainEditorRequest.setId(200L);
+        assertThrows(UserNotFoundException.class, () -> mainEditorService.assignPublisherEditor(mainEditorRequest));
     }
 
     @Test
@@ -148,16 +175,18 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(userService).existsPublisherEditorById(2L);
-        doThrow(UserIsAlreadySubscriberException.class).when(userService).existsSubscriberById(3L);
+        assertDoesNotThrow(() -> userService.existsPublisherEditorById(2L));
 
         ResponseEntity<Subscriber> assigned = new ResponseEntity<>(new Subscriber(),HttpStatus.OK);
         doReturn(assigned).when(userService).assignToSubscriber(mainEditorRequest.getId());
 
         assertDoesNotThrow(() -> mainEditorService.assignSubscriber(mainEditorRequest));
 
+        mainEditorRequest.setMainEditorId(100L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.assignSubscriber(mainEditorRequest));
     }
 
     @Test
@@ -168,17 +197,31 @@ public class MainEditorServiceTest {
         updateNewsRequest.setNewsId(2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
+
+        doReturn(true).when(newsService).isNewsExist(2L);
+        assertDoesNotThrow(() -> newsService.isNewsExist(2L));
 
         News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
         Content content = new Content();
         content.setId(3L);
         news.setContent(content);
 
+        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
+        //doReturn()
+        doReturn(expected).when(newsService).save(news);
         doReturn(news).when(newsService).findById(2L);
-        doReturn(null).when(newsService).findById(200L);
-
         assertDoesNotThrow(() -> mainEditorService).updateNews(updateNewsRequest);
+
+        updateNewsRequest.setMainEditorId(100L);
+        //doThrow(new MainEditorNotFoundException(100L)).when(mainEditorService).updateNews(updateNewsRequest);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.updateNews(updateNewsRequest));
+
+        UpdateNewsRequest updateNewsRequest1 = new UpdateNewsRequest();
+        updateNewsRequest1.setMainEditorId(1L);
+        updateNewsRequest1.setNewsId(200L);
+
+        assertThrows(NewsNotFoundException.class, () -> mainEditorService.updateNews(updateNewsRequest1));
     }
 
     @Test
@@ -233,7 +276,7 @@ public class MainEditorServiceTest {
 
         doReturn(true).when(contentService).isContentExist(2L);
         doThrow(ContentNotFoundException.class).when(contentService).isContentExist(200L);
-
+        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
         assertDoesNotThrow(() -> mainEditorService.deleteContent(mainEditorRequest));
     }
 }

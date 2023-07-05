@@ -87,9 +87,7 @@ public class MainEditorServiceImpl implements MainEditorService {
     public ResponseEntity<HttpStatus> assignPublisherEditor(MainEditorRequest mainEditorRequest){
 
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
-
-            boolean result = userService.existsSubscriberById(mainEditorRequest.getId());
-            if(result){
+            if(userService.existsSubscriberById(mainEditorRequest.getId())){
                 userService.assignToPublisherEditor(mainEditorRequest.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             }
@@ -117,7 +115,6 @@ public class MainEditorServiceImpl implements MainEditorService {
     public ResponseEntity<HttpStatus> updateNews(UpdateNewsRequest updateNewsRequest) {
         if(verifyMainEditor(updateNewsRequest.getMainEditorId())) {
             if (newsService.isNewsExist(updateNewsRequest.getNewsId())) {
-
                 News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
                 news.setContent(new Content(newsService.findById(updateNewsRequest.getNewsId()).getContent().getId()));
                 newsService.save(news);
