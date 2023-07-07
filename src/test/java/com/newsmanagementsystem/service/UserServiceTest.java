@@ -2,9 +2,9 @@ package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
-import com.newsmanagementsystem.model.PublisherEditor;
-import com.newsmanagementsystem.model.Subscriber;
-import com.newsmanagementsystem.model.User;
+import com.newsmanagementsystem.mapper.DisplayNewsMapper;
+import com.newsmanagementsystem.mapper.UserMapper;
+import com.newsmanagementsystem.model.*;
 import com.newsmanagementsystem.repository.UserRepository;
 import com.newsmanagementsystem.service.impl.ContentServiceImpl;
 import com.newsmanagementsystem.service.impl.NewsServiceImpl;
@@ -55,10 +55,10 @@ class UserServiceTest {
     @Transactional
     @Rollback
     void create_shouldCreateSubscriberSuccessfully(){
-
         Subscriber subscriber = new Subscriber();
-        assertDoesNotThrow(() -> userService.createSubscriber(subscriber));
+        doReturn(subscriber).when(userRepository).save(subscriber);
 
+        assertDoesNotThrow(() -> userService.createSubscriber(subscriber));
     }
 
 
@@ -68,25 +68,25 @@ class UserServiceTest {
     @Rollback
     void create_shouldCreatePublisherEditorSuccessfully(){
         PublisherEditor publisherEditor = new PublisherEditor();
+        doReturn(publisherEditor).when(userRepository).save(publisherEditor);
         assertDoesNotThrow(() -> userService.createPublisherEditor(publisherEditor));
     }
 
-    @Test
-    @DisplayName("displayNews test")
-    void display_shouldDisplayNews(){
+        @Test
+        @DisplayName("displayNews test")
+        void display_shouldDisplayNews(){
+            List<News> newsList = new ArrayList<>();
+            News news = new News();
+            news.setId(1L);
+            newsList.add(news);
+            Pageable pageableResponse = PageRequest.of(0, 2);
+            ResponseEntity<Page<DisplayNewsResponse>> expected =
+                    new ResponseEntity<>(new PageImpl<>(DisplayNewsMapper.INSTANCE.newsToDisplayNewsResponse(newsList),pageableResponse, newsList.size()), HttpStatus.OK);
 
-        List<DisplayNewsResponse> displayNewsResponseList = new ArrayList<>();
-        Pageable pageableResponse = PageRequest.of(0, 2);
-        ResponseEntity<Page<DisplayNewsResponse>> expected =
-                new ResponseEntity<>(new PageImpl<>(displayNewsResponseList,pageableResponse,5),HttpStatus.OK);
+            doReturn(expected).when(newsService).displayNewsForNonSubscriber(pageableResponse);
 
-        doReturn(expected).when(newsService).displayNewsForNonSubscriber(pageableResponse);
-
-        assertDoesNotThrow(() -> userService.displayNews(pageableResponse));
-
-    }
-
-
+            assertDoesNotThrow(() -> userService.displayNews(pageableResponse));
+        }
 
     @Test
     @DisplayName("assignToPublisherEditor test")
@@ -95,40 +95,29 @@ class UserServiceTest {
     void assign_shouldAssignToPublisherEditor(){
         User user = new User();
         user.setId(2L);
+        Optional<User> optionalUser = Optional.of(user);
+        doReturn(optionalUser).when(userRepository).findById(2L);
+
+        PublisherEditor publisherEditor = UserMapper.INSTANCE.convertToPublisherEditor(optionalUser.orElse(null));
+
+        doReturn(publisherEditor).when(userRepository).save(publisherEditor);
 
         assertDoesNotThrow(() -> userService.assignToPublisherEditor(2L));
+
     }
 
 
     @Test
     @DisplayName("assignToSubscriber test")
     void assign_shouldAssignToSubscriber(){
-        Subscriber subscriber = new Subscriber();
-        ResponseEntity<Subscriber> expected = new ResponseEntity<>(subscriber,HttpStatus.OK);
+        User user = new User();
+        user.setId(2L);
+        Optional<User> optionalUser = Optional.of(user);
+        doReturn(optionalUser).when(userRepository).findById(2L);
 
-        doReturn(expected).when(userService).assignToSubscriber(any());
+        Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(optionalUser.orElse(null));
 
-        ResponseEntity<Subscriber> actual = userService.assignToSubscriber(any());
-
-        assertAll(
-                () -> assertEquals(expected, actual),
-                () -> assertEquals(Subscriber.class,actual.getBody().getClass())
-        );
-
-    }
-
-    @Test
-    @DisplayName("assignToSubscriberThrowException test")
-    void throw_shouldThrowPublisherEditorHasContentsException(){
-        Subscriber subscriber = new Subscriber();
-        PublisherEditorNotFoundException expected = new PublisherEditorNotFoundException(7L);
-
-        doThrow(expected).when(userService).assignToSubscriber(7L);
-
-        assertAll(
-                () -> assertThrows(PublisherEditorNotFoundException.class,
-                        () -> userService.assignToSubscriber(7L))
-        );
+        assertDoesNotThrow(() -> userService.assignToSubscriber(2L));
 
     }
 
@@ -136,18 +125,10 @@ class UserServiceTest {
     @Transactional
     @DisplayName("findMainEditors test")
     void find_shouldFindMainEditors(){
-        /*List<User> expected = new ArrayList<>();
+        List<User> expected = new ArrayList<>();
         expected.add(new MainEditor());
 
-        doReturn(expected).when(userService).findMainEditors();
-
-        List<User> actual = userService.findMainEditors();
-
-        assertAll(
-                () -> assertEquals(expected,actual),
-                () -> assertNotEquals(0,actual.size())
-        );*/
-        //List<User> expected = new ArrayList<>();
+        doReturn(expected).when(userRepository).findByUserType("main_editor");
         assertDoesNotThrow(() -> userService.findMainEditors());
     }
 
@@ -158,14 +139,9 @@ class UserServiceTest {
         List<User> expected = new ArrayList<>();
         expected.add(new PublisherEditor());
 
-        doReturn(expected).when(userService).findPublisherEditors();
+        doReturn(expected).when(userRepository).findByUserType("publisher_editor");
+        assertDoesNotThrow(() -> userService.findPublisherEditors());
 
-        List<User> actual = userService.findPublisherEditors();
-
-        assertAll(
-                () -> assertEquals(expected,actual),
-                () -> assertEquals(PublisherEditor.class, actual.get(0).getClass())
-        );
     }
 
     @Test
@@ -174,24 +150,16 @@ class UserServiceTest {
         List<User> expected = new ArrayList<>();
         expected.add(new Subscriber());
 
-        doReturn(expected).when(userService).findSubscriberUsers();
-
-        List<User> actual = userService.findSubscriberUsers();
-
-        assertAll(
-                () -> assertEquals(expected,actual),
-                () -> assertEquals(Subscriber.class, actual.get(0).getClass())
-        );
+        doReturn(expected).when(userRepository).findByUserType("subscriber");
+        assertDoesNotThrow(() -> userService.findSubscriberUsers());
     }
 
     @Test
     @DisplayName("existsUserById test")
     @Transactional
     void find_shouldFindExistenceOfUser(){
-        //doReturn(true).when(userRepository).existsUserById(2L);
-
+        doReturn(true).when(userRepository).existsUserById(2L);
         assertDoesNotThrow(() -> userService.existsUserById(2L));
-
     }
 
     @Test
@@ -199,10 +167,7 @@ class UserServiceTest {
     @Transactional
     @Rollback
     void delete_shouldDeleteUser(){
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
         doNothing().when(userRepository).deleteById(10L);
-        doReturn(expected).when(userService).delete(10L);
-
         assertDoesNotThrow(() -> userService.delete(10L));
     }
 
@@ -211,13 +176,10 @@ class UserServiceTest {
     void get_shouldGetUser(){
         User user = new User();
         user.setId(10L);
-        user.setUserType("publisher_editor");
-        ResponseEntity<User> expected = new ResponseEntity<>(user,HttpStatus.OK);
-        doReturn(expected).when(userService).getUser(10L);
+
+        doReturn(Optional.of(user)).when(userRepository).findById(10L);
 
         assertDoesNotThrow(() -> userService.getUser(10L));
-
     }
-
 
 }

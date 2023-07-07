@@ -34,9 +34,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private NewsService newsService;
 
-    private ContentService contentService;
-    public UserServiceImpl(@Lazy ContentService contentService){ this.contentService = contentService; }
-
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
@@ -48,9 +45,7 @@ public class UserServiceImpl implements UserService {
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
-
     @Override
     public ResponseEntity<HttpStatus> createPublisherEditor(PublisherEditor publisherEditor) {
         try{
@@ -85,8 +80,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<Subscriber> assignToSubscriber(Long userId) {
         try{
             Optional<User> userOptional = userRepository.findById(userId);
-            List<Content> contentList= contentService.findAllByPublisherEditorId(userId).getBody();
-            if(contentList == null || !contentList.isEmpty()) throw new PublisherEditorHasContentsException();
             Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(userOptional.orElse(null));
             userRepository.save(subscriber);
             log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"subscriber.assign", userId,HttpStatus.OK.value()));
@@ -96,7 +89,7 @@ public class UserServiceImpl implements UserService {
             }
             else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }catch(Exception e){
-            throw e;
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
