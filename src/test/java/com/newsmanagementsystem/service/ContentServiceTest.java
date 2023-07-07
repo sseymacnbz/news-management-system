@@ -1,13 +1,16 @@
 package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotFoundException;
+import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentsNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
+import com.newsmanagementsystem.model.BaseEntity;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.repository.ContentRepository;
 import com.newsmanagementsystem.service.impl.ContentServiceImpl;
 import com.newsmanagementsystem.service.impl.NewsServiceImpl;
 import com.newsmanagementsystem.service.impl.UserServiceImpl;
 import jakarta.transaction.Transactional;
+import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,8 +30,11 @@ import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,25 +54,60 @@ public class ContentServiceTest {
     @DisplayName("getContentsThatIsNews test")
     void get_shouldGetContentsThatIsNews(){
         Pageable pageableResponse = PageRequest.of(0, 2);
-        List<Content> contentList = new ArrayList<>();
-        ResponseEntity<Page<Content>> expected =
-                new ResponseEntity<>(new PageImpl<>(contentList,pageableResponse,5), HttpStatus.OK);
 
-        doReturn(expected).when(contentService).getContentsThatIsNews(pageableResponse);
+        List<Long> newsContentList = new ArrayList<>();
+        newsContentList.add(1L);
+        newsContentList.add(2L);
+        ResponseEntity<List<Long>> listContentsResponse = new ResponseEntity<>(newsContentList,HttpStatus.OK);
+
+        doReturn(listContentsResponse).when(newsService).newsContents();
+        assertNotNull(newsContentList);
+
+        Optional<Content> optionalContent = Optional.of(new Content(1L));
+        //given(contentRepository.findById(anyLong())).willReturn(optionalContent);
+
+        doReturn(optionalContent).when(contentRepository).findById(anyLong());
+
         assertDoesNotThrow(() -> contentService.getContentsThatIsNews(pageableResponse));
+
     }
 
     @Test
     @DisplayName("getContentsThatIsNotNews test")
     void get_shouldGetContentsThatIsNotNews(){
         Pageable pageableResponse = PageRequest.of(0, 2);
-        List<Content> contentList = new ArrayList<>();
-        ResponseEntity<Page<Content>> expected =
-                new ResponseEntity<>(new PageImpl<>(contentList,pageableResponse,5), HttpStatus.OK);
 
-        doReturn(expected).when(contentService).getContentsThatIsNotNews(pageableResponse);
+        List<Long> longList = new ArrayList<>();
+        longList.add(1L);
+        ResponseEntity<List<Long>> expected = new ResponseEntity<>(longList, HttpStatus.OK);
+        doReturn(expected).when(newsService).newsContents();
+
+        List<Content> contentList = new ArrayList<>();
+        contentList.add(new Content(1L));
+
+        doReturn(contentList).when(contentRepository).findAll();
+
+        assertNotNull(contentList);
+
+        Optional<Content> optionalContent = Optional.of(new Content(1L));
+        //given(contentRepository.findById(anyLong())).willReturn(optionalContent);
+
+        doReturn(optionalContent).when(contentRepository).findById(anyLong());
+
         assertDoesNotThrow(() -> contentService.getContentsThatIsNotNews(pageableResponse));
+
+        // CONTENTLIST I NULL YAPIP BIR DE ONA GÖRE TEST YAZ
+
+        /*contentList = isNull();
+        assertNull(contentList);
+
+        List<Content> contentList2 = new ArrayList<>();
+        doReturn(contentList2).when(contentRepository).findAll();
+
+        assertDoesNotThrow(() -> contentService.getContentsThatIsNotNews(pageableResponse));*/
+
     }
+
     @Test
     @DisplayName("save test")
     @Transactional
@@ -74,10 +115,6 @@ public class ContentServiceTest {
     void save_shouldSaveContent(){
         Content content = new Content();
         doReturn(content).when(contentRepository).save(content);
-
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
-        doReturn(expected).when(contentService).save(content);
-
         assertDoesNotThrow(() -> contentService.save(content));
     }
 
@@ -86,16 +123,19 @@ public class ContentServiceTest {
     @Transactional
     @Rollback
     void delete_shouldDeleteContent(){
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<HttpStatus> expected  = new ResponseEntity<>(HttpStatus.OK);
         List<Content> contentList = new ArrayList<>();
-        contentList.add(new Content(2L));
+        contentList.add(new Content(1L));
+
+        doReturn(true).when(contentRepository).existsContentById(1L);
+
         doReturn(expected).when(newsService).deleteNewsByContents(contentList);
 
-        doNothing().when(contentRepository).deleteById(2L);
+        doNothing().when(contentRepository).deleteById(1L);
 
-        doReturn(expected).when(contentService).delete(2L);
-        doThrow(ContentNotFoundException.class).when(contentService).delete(100L);
-        assertDoesNotThrow(() -> contentService.delete(2L));
+        assertDoesNotThrow(() -> contentService.delete(1L));
+        assertThrows(ContentNotFoundException.class, () -> contentService.delete(3L));
+
     }
 
     @Test
@@ -103,29 +143,34 @@ public class ContentServiceTest {
     @Transactional
     @Rollback
     void delete_shouldDeleteAllByPublisherEditorId(){
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
-        doReturn(true).when(userService).existsPublisherEditorById(2L);
+        doReturn(true).when(userService).existsPublisherEditorById(1L);
+        assertDoesNotThrow(() -> userService.existsPublisherEditorById(1L));
+
+        assertThrows(PublisherEditorNotFoundException.class, () -> contentService.deleteAllByPublisherEditorId(2L));
+
+        assertDoesNotThrow(() -> contentService.deleteAllByPublisherEditorId(1L));
 
         List<Content> contentList = new ArrayList<>();
-        doReturn(contentList).when(contentRepository).findAllByPublisherEditorId(2L);
+        contentList.add(new Content(1L));
 
-        doReturn(expected).when(contentService).deleteAllByPublisherEditorId(2L);
+        doReturn(contentList).when(contentRepository).findAllByPublisherEditorId(1L);
+        assertDoesNotThrow(() -> contentRepository.findAllByPublisherEditorId(1L));
 
-        assertDoesNotThrow(() -> contentService.deleteAllByPublisherEditorId(2L));
     }
 
     @Test
     @DisplayName("findAllByPublisherEditorId test")
     @Transactional
     void find_shouldFindAllByPublisherEditorId(){
-        ResponseEntity<List<Content>> expected = new ResponseEntity<>(HttpStatus.OK);
 
         doReturn(true).when(userService).existsPublisherEditorById(2L);
+        List<Content> contentList = new ArrayList<>();
 
-        doReturn(expected).when(contentService).findAllByPublisherEditorId(2L);
-        doThrow(PublisherEditorNotFoundException.class).when(contentService).findAllByPublisherEditorId(3L);
+        doReturn(contentList).when(contentRepository).findAllByPublisherEditorId(2L);
 
+        assertThrows(PublisherEditorNotFoundException.class, () -> contentService.findAllByPublisherEditorId(3L));
         assertDoesNotThrow(() -> contentService.findAllByPublisherEditorId(2L));
+
     }
 
     @Test

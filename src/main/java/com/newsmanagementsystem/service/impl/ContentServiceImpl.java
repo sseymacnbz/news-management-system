@@ -97,15 +97,13 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ResponseEntity<HttpStatus> delete(Long contentId) {
 
-        try{
+        if(contentRepository.existsContentById(contentId)){
             newsService.deleteNewsByContents(contentRepository.findById(contentId).stream().toList());
             contentRepository.deleteById(contentId);
             log.info(LogUtil.getMessageWithId(Thread.currentThread().getStackTrace()[1].getMethodName(),"content.deleted",contentId,HttpStatus.OK.value()));
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch(Exception e){
-            throw new ContentNotFoundException(contentId);
         }
-
+        throw new ContentNotFoundException(contentId);
     }
 
     @Override
