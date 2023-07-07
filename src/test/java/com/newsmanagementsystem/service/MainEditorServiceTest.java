@@ -69,10 +69,8 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(userService).existsUserById(2L);
-        assertDoesNotThrow(() -> userService.existsUserById(2L));
 
         assertDoesNotThrow(() -> mainEditorService.getUser(mainEditorRequest));
 
@@ -91,10 +89,8 @@ public class MainEditorServiceTest {
         createNewsRequest.setContentId(2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(contentService).isContentExist(2L);
-        assertDoesNotThrow(() -> contentService.isContentExist(2L));
 
         News news = NewsMapper.INSTANCE.createNewsRequestToNews(createNewsRequest);
 
@@ -118,7 +114,6 @@ public class MainEditorServiceTest {
         createPublisherEditorRequest.setMainEditorId(1L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
         doReturn(expected).when(publisherEditorService).createPublisherEditor(createPublisherEditorRequest);
@@ -136,7 +131,6 @@ public class MainEditorServiceTest {
         createUserRequest.setMainEditorId(1L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         Subscriber subscriber = UserMapper.INSTANCE.convertToSubscriber(createUserRequest);
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
@@ -154,10 +148,8 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(userService).existsSubscriberById(2L);
-        assertDoesNotThrow(() -> userService.existsSubscriberById(2L));
 
         assertDoesNotThrow(() -> mainEditorService.assignPublisherEditor(mainEditorRequest));
 
@@ -175,13 +167,11 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(userService).existsPublisherEditorById(2L);
-        assertDoesNotThrow(() -> userService.existsPublisherEditorById(2L));
 
-        ResponseEntity<Subscriber> assigned = new ResponseEntity<>(new Subscriber(),HttpStatus.OK);
-        doReturn(assigned).when(userService).assignToSubscriber(mainEditorRequest.getId());
+        ResponseEntity<Subscriber> expected = new ResponseEntity<>(new Subscriber(),HttpStatus.OK);
+        doReturn(expected).when(userService).assignToSubscriber(mainEditorRequest.getId());
 
         assertDoesNotThrow(() -> mainEditorService.assignSubscriber(mainEditorRequest));
 
@@ -197,10 +187,8 @@ public class MainEditorServiceTest {
         updateNewsRequest.setNewsId(2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
 
         doReturn(true).when(newsService).isNewsExist(2L);
-        assertDoesNotThrow(() -> newsService.isNewsExist(2L));
 
         News news = NewsMapper.INSTANCE.updateNewsRequestToNews(updateNewsRequest);
         Content content = new Content();
@@ -208,13 +196,12 @@ public class MainEditorServiceTest {
         news.setContent(content);
 
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
-        //doReturn()
+
         doReturn(expected).when(newsService).save(news);
         doReturn(news).when(newsService).findById(2L);
         assertDoesNotThrow(() -> mainEditorService).updateNews(updateNewsRequest);
 
         updateNewsRequest.setMainEditorId(100L);
-        //doThrow(new MainEditorNotFoundException(100L)).when(mainEditorService).updateNews(updateNewsRequest);
         assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.updateNews(updateNewsRequest));
 
         UpdateNewsRequest updateNewsRequest1 = new UpdateNewsRequest();
@@ -230,12 +217,19 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
 
         doReturn(true).when(newsService).isNewsExist(2L);
-        doThrow(NewsNotFoundException.class).when(newsService).isNewsExist(200L);
+
+        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
+        doReturn(expected).when(newsService).delete(2L);
 
         assertDoesNotThrow(() -> mainEditorService.deleteNews(mainEditorRequest));
+
+        mainEditorRequest.setId(3L);
+        assertThrows(NewsNotFoundException.class, () -> mainEditorService.deleteNews(mainEditorRequest));
+
+        mainEditorRequest.setMainEditorId(3L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.deleteNews(mainEditorRequest));
     }
 
     @Test
@@ -244,12 +238,16 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
 
         doReturn(true).when(userService).existsSubscriberById(2L);
-        doThrow(UserNotFoundException.class).when(userService).existsSubscriberById(200L);
 
         assertDoesNotThrow(() -> mainEditorService.deleteSubscriber(mainEditorRequest));
+
+        mainEditorRequest.setId(3L);
+        assertThrows(UserNotFoundException.class, () -> mainEditorService.deleteSubscriber(mainEditorRequest));
+
+        mainEditorRequest.setMainEditorId(3L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.deleteSubscriber(mainEditorRequest));
     }
 
     @Test
@@ -258,12 +256,19 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
-
         doReturn(true).when(userService).existsPublisherEditorById(2L);
-        doThrow(PublisherEditorNotFoundException.class).when(userService).existsPublisherEditorById(200L);
+
+        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
+        doReturn(expected).when(contentService).deleteAllByPublisherEditorId(2L);
+        doReturn(expected).when(userService).delete(2L);
 
         assertDoesNotThrow(() -> mainEditorService.deletePublisherEditor(mainEditorRequest));
+
+        mainEditorRequest.setId(3L);
+        assertThrows(PublisherEditorNotFoundException.class, () -> mainEditorService.deletePublisherEditor(mainEditorRequest));
+
+        mainEditorRequest.setMainEditorId(3L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.deletePublisherEditor(mainEditorRequest));
     }
 
     @Test
@@ -272,11 +277,29 @@ public class MainEditorServiceTest {
         MainEditorRequest mainEditorRequest = new MainEditorRequest(1L,2L);
 
         doReturn(true).when(mainEditorService).verifyMainEditor(1L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
-
         doReturn(true).when(contentService).isContentExist(2L);
-        doThrow(ContentNotFoundException.class).when(contentService).isContentExist(200L);
-        doThrow(MainEditorNotFoundException.class).when(mainEditorService).verifyMainEditor(100L);
+
+        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
+        doReturn(expected).when(contentService).delete(2L);
+
         assertDoesNotThrow(() -> mainEditorService.deleteContent(mainEditorRequest));
+
+        mainEditorRequest.setId(3L);
+        assertThrows(ContentNotFoundException.class, () -> mainEditorService.deleteContent(mainEditorRequest));
+
+        mainEditorRequest.setMainEditorId(3L);
+        assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.deleteContent(mainEditorRequest));
+    }
+
+    @Test
+    @DisplayName("verifyMainEditor test")
+    void verifyMainEditor(){
+        List<User> userList = new ArrayList<>();
+        User user = new User();
+        user.setId(1L);
+        userList.add(user);
+        doReturn(userList).when(userService).findMainEditors();
+
+        assertDoesNotThrow(() -> mainEditorService.verifyMainEditor(1L));
     }
 }
