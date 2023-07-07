@@ -4,6 +4,7 @@ import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
+import com.newsmanagementsystem.model.enums.NewsTypeEnum;
 import com.newsmanagementsystem.repository.NewsRepository;
 import com.newsmanagementsystem.service.impl.NewsServiceImpl;
 import jakarta.transaction.Transactional;
@@ -45,6 +46,8 @@ class NewsServiceTest {
     @Test
     @DisplayName("newsContents test")
     void get_shouldGetNewsContents(){
+        List<Long> longList = new ArrayList<>();
+        doReturn(longList).when(newsRepository).newsContents();
         assertDoesNotThrow(() -> newsService.newsContents());
     }
 
@@ -62,6 +65,11 @@ class NewsServiceTest {
     @DisplayName("displayNewsForSubscriber test")
     void display_shouldDisplayNewsForSubscriber(){
         Pageable pageableResponse = PageRequest.of(0,2);
+        List<News> newsList = new ArrayList<>();
+
+        doReturn(newsList).when(newsRepository).findAllByIsHeadlineOrderByDateDesc(true);
+        doReturn(newsList).when(newsRepository).findAllByIsHeadlineOrderByDateDesc(false);
+
         assertDoesNotThrow(() -> newsService.displayNewsForSubscriber(pageableResponse,100L));
     }
 
@@ -69,6 +77,10 @@ class NewsServiceTest {
     @DisplayName("displayNewsForNonSubscriber test")
     void display_shouldDisplayNewsForNonSubscriber(){
         Pageable pageableResponse = PageRequest.of(0, 2);
+        List<News> newsList = new ArrayList<>();
+
+        doReturn(newsList).when(newsRepository).findAllByIsHeadlineAndNewsTypeEnumOrderByDateDesc(true, NewsTypeEnum.FREE_NEWS);
+        doReturn(newsList).when(newsRepository).findAllByIsHeadlineAndNewsTypeEnumOrderByDateDesc(false, NewsTypeEnum.FREE_NEWS);
         assertDoesNotThrow(() -> newsService.displayNewsForNonSubscriber(pageableResponse));
     }
 
@@ -99,16 +111,11 @@ class NewsServiceTest {
     void delete_shouldDeleteNews(){
 
         doReturn(true).when(newsService).isNewsExist(2L);
-        assertDoesNotThrow(() -> newsService.isNewsExist(2L));
 
         News news = new News();
         news.setId(2L);
         doReturn(news).when(newsRepository).getReferenceById(2L);
         doNothing().when(newsRepository).delete(news);
-
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
-
-        doReturn(expected).when(newsService).delete(2L);
 
         assertDoesNotThrow(() -> newsService.delete(2L));
         assertThrows(NewsNotFoundException.class, () -> newsService.delete(3L));
@@ -119,11 +126,15 @@ class NewsServiceTest {
     @Rollback
     @DisplayName("deleteNewsByContents test")
     void delete_shouldDeleteNewsByContents(){
-        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.OK);
-
         List<Content> contentList = new ArrayList<>();
         contentList.add(new Content(1L));
-        contentList.add(new Content(2L));
+
+        List<News> newsList = new ArrayList<>();
+        News news = new News();
+        news.setId(1L);
+        news.setContent(new Content(1L));
+        newsList.add(news);
+        doReturn(newsList).when(newsRepository).findByContentId(1L);
 
         assertDoesNotThrow(() -> newsService.deleteNewsByContents(contentList));
     }
