@@ -2,21 +2,17 @@ package com.newsmanagementsystem.service.impl;
 
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorHasContentsException;
 import com.newsmanagementsystem.mapper.UserMapper;
-import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.model.Subscriber;
 import com.newsmanagementsystem.model.User;
 import com.newsmanagementsystem.repository.UserRepository;
-import com.newsmanagementsystem.service.ContentService;
 import com.newsmanagementsystem.service.NewsService;
 import com.newsmanagementsystem.service.UserService;
 import com.newsmanagementsystem.utilities.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;

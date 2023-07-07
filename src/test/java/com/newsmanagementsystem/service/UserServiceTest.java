@@ -1,7 +1,6 @@
 package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
 import com.newsmanagementsystem.mapper.DisplayNewsMapper;
 import com.newsmanagementsystem.mapper.UserMapper;
 import com.newsmanagementsystem.model.*;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 

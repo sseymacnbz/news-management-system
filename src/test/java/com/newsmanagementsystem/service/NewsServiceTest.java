@@ -1,6 +1,5 @@
 package com.newsmanagementsystem.service;
 
-import com.newsmanagementsystem.dto.responses.DisplayNewsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.NewsNotFoundException;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.model.News;
@@ -17,18 +16,13 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;

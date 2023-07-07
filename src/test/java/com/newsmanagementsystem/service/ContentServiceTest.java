@@ -1,16 +1,13 @@
 package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentNotFoundException;
-import com.newsmanagementsystem.exceptionhandler.exceptiontypes.ContentsNotFoundException;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
-import com.newsmanagementsystem.model.BaseEntity;
 import com.newsmanagementsystem.model.Content;
 import com.newsmanagementsystem.repository.ContentRepository;
 import com.newsmanagementsystem.service.impl.ContentServiceImpl;
 import com.newsmanagementsystem.service.impl.NewsServiceImpl;
 import com.newsmanagementsystem.service.impl.UserServiceImpl;
 import jakarta.transaction.Transactional;
-import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +17,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -30,16 +25,14 @@ import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ContentServiceTest {
+class ContentServiceTest {
     @Mock
     ContentRepository contentRepository;
     @Mock
@@ -90,21 +83,10 @@ public class ContentServiceTest {
         assertNotNull(contentList);
 
         Optional<Content> optionalContent = Optional.of(new Content(1L));
-        //given(contentRepository.findById(anyLong())).willReturn(optionalContent);
 
         doReturn(optionalContent).when(contentRepository).findById(anyLong());
 
         assertDoesNotThrow(() -> contentService.getContentsThatIsNotNews(pageableResponse));
-
-        // CONTENTLIST I NULL YAPIP BIR DE ONA GÖRE TEST YAZ
-
-        /*contentList = isNull();
-        assertNull(contentList);
-
-        List<Content> contentList2 = new ArrayList<>();
-        doReturn(contentList2).when(contentRepository).findAll();
-
-        assertDoesNotThrow(() -> contentService.getContentsThatIsNotNews(pageableResponse));*/
 
     }
 
