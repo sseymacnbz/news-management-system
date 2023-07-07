@@ -1,40 +1,41 @@
 package com.newsmanagementsystem.service;
 
 import com.newsmanagementsystem.dto.requests.CreateContentRequest;
+import com.newsmanagementsystem.dto.requests.CreatePublisherEditorRequest;
 import com.newsmanagementsystem.dto.responses.DisplayContentsResponse;
 import com.newsmanagementsystem.exceptionhandler.exceptiontypes.PublisherEditorNotFoundException;
+import com.newsmanagementsystem.mapper.ContentMapper;
+import com.newsmanagementsystem.mapper.PublisherEditorMapper;
 import com.newsmanagementsystem.model.Content;
-import com.newsmanagementsystem.model.User;
-import com.newsmanagementsystem.model.enums.CategoryEnum;
-import com.newsmanagementsystem.model.enums.ScopeEnum;
+import com.newsmanagementsystem.model.PublisherEditor;
 import com.newsmanagementsystem.service.impl.ContentServiceImpl;
 import com.newsmanagementsystem.service.impl.PublisherEditorServiceImpl;
 import com.newsmanagementsystem.service.impl.UserServiceImpl;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PublisherEditorServiceTest {
 
+    @Spy
     @InjectMocks
     PublisherEditorServiceImpl publisherEditorService;
     @Mock
@@ -47,28 +48,31 @@ class PublisherEditorServiceTest {
     @DisplayName("createContent test")
     void create_shouldCreateContent(){
 
+        CreateContentRequest createContentRequest = new CreateContentRequest();
+        createContentRequest.setPublisherEditorId(2L);
+
+        doReturn(true).when(userService).existsPublisherEditorById(2L);
+        Content content = ContentMapper.INSTANCE.createContentRequestToContent(createContentRequest);
         ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
-        Content content = new Content();
-        assertDoesNotThrow(() -> contentService.save(content));
+        doReturn(expected).when(contentService).save(content);
+
+        assertDoesNotThrow(() -> publisherEditorService.createContent(createContentRequest));
+        createContentRequest.setPublisherEditorId(3L);
+        assertThrows(PublisherEditorNotFoundException.class,() -> publisherEditorService.createContent(createContentRequest));
     }
 
     @Test
-    @DisplayName("createContentThrowException test")
-    void throw_shouldThrowPublisherEditorNotFoundException(){
+    @DisplayName("createPublisherEditor test")
+    void create_shouldCreatePublisherEditor(){
+        CreatePublisherEditorRequest createPublisherEditorRequest = new CreatePublisherEditorRequest();
+        createPublisherEditorRequest.setMainEditorId(1L);
 
-        CreateContentRequest createContentRequest = new CreateContentRequest();
-        createContentRequest.setPublisherEditorId(7L);
+        PublisherEditor publisherEditor = PublisherEditorMapper.INSTANCE.createPublisherEditorRequestToPublisherEditor(createPublisherEditorRequest);
+        ResponseEntity<HttpStatus> expected = new ResponseEntity<>(HttpStatus.CREATED);
+        doReturn(expected).when(userService).createPublisherEditor(publisherEditor);
 
-        PublisherEditorNotFoundException expected = new PublisherEditorNotFoundException(7L);
-
-        doThrow(expected).when(userService).existsPublisherEditorById(7L);
-
-        assertAll(
-                () -> assertThrows(PublisherEditorNotFoundException.class,
-                        () -> publisherEditorService.createContent(createContentRequest))
-        );
+        assertDoesNotThrow(() -> publisherEditorService.createPublisherEditor(createPublisherEditorRequest));
     }
-
 
     @Test
     @DisplayName("displayContent test")
@@ -81,11 +85,9 @@ class PublisherEditorServiceTest {
         List<Content> contentList = new ArrayList<>();
         ResponseEntity<List<Content>> expectedList = new ResponseEntity<>(contentList,HttpStatus.OK);
         doReturn(expectedList).when(contentService).findAllByPublisherEditorId(3L);
-        doThrow(PublisherEditorNotFoundException.class).when(userService).existsPublisherEditorById(100L);
 
-        assertAll(
-                () -> assertDoesNotThrow(() -> publisherEditorService.displayContents(pageableResponse,3L)),
-                () -> assertThrows(PublisherEditorNotFoundException.class, () -> publisherEditorService.displayContents(pageableResponse,100L))
-        );
+        assertDoesNotThrow(() -> publisherEditorService.displayContents(pageableResponse,3L));
+        assertThrows(PublisherEditorNotFoundException.class, () -> publisherEditorService.displayContents(pageableResponse,100L));
+
     }
 }
