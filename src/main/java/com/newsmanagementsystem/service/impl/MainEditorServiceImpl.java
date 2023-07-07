@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 
 
 @Service
@@ -102,6 +103,8 @@ public class MainEditorServiceImpl implements MainEditorService {
         if(verifyMainEditor(mainEditorRequest.getMainEditorId())){
             boolean result = userService.existsPublisherEditorById(mainEditorRequest.getId());
             if (result) {
+                List<Content> contentList= contentService.findAllByPublisherEditorId(mainEditorRequest.getId()).getBody();
+                if(contentList == null || !contentList.isEmpty()) throw new PublisherEditorHasContentsException();
                 userService.assignToSubscriber(mainEditorRequest.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             }

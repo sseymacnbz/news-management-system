@@ -170,6 +170,11 @@ public class MainEditorServiceTest {
 
         doReturn(true).when(userService).existsPublisherEditorById(2L);
 
+        List<Content> contentList = new ArrayList<>();
+
+        ResponseEntity<List<Content>> responseList = new ResponseEntity<>(contentList, HttpStatus.OK);
+        doReturn(responseList).when(contentService).findAllByPublisherEditorId(2L);
+
         ResponseEntity<Subscriber> expected = new ResponseEntity<>(new Subscriber(),HttpStatus.OK);
         doReturn(expected).when(userService).assignToSubscriber(mainEditorRequest.getId());
 
@@ -177,6 +182,10 @@ public class MainEditorServiceTest {
 
         mainEditorRequest.setMainEditorId(100L);
         assertThrows(MainEditorNotFoundException.class, () -> mainEditorService.assignSubscriber(mainEditorRequest));
+
+        contentList.add(new Content(1L));
+        mainEditorRequest.setMainEditorId(1L);
+        assertThrows(PublisherEditorHasContentsException.class, () -> mainEditorService.assignSubscriber(mainEditorRequest));
     }
 
     @Test
