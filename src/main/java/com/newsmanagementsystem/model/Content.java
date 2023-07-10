@@ -3,28 +3,21 @@ package com.newsmanagementsystem.model;
 import com.newsmanagementsystem.model.enums.CategoryEnum;
 import com.newsmanagementsystem.model.enums.ScopeEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
 @Table(name = "content")
-public class Content{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class Content extends BaseEntity{
 
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "scope")
     @Enumerated(EnumType.STRING)
@@ -44,6 +37,7 @@ public class Content{
     @JoinColumn(name = "publisher_editor_id")
     private PublisherEditor publisherEditor;
 
-    @OneToMany(mappedBy = "content")
-    private List<News> news;
+    public Content(Long id) {
+        super(id);
+    }
 }

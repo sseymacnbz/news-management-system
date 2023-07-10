@@ -1,26 +1,22 @@
 package com.newsmanagementsystem.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "user_type")
-@DiscriminatorValue("user")
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "user_")
-public class User{
+public class User extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "user_type", insertable = false, updatable = false)
+    private String userType;
 
     @Column(name = "name")
     private String name;
@@ -33,8 +29,5 @@ public class User{
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "is_Subscribe")
-    private Boolean isSubscribe;
 
 }
